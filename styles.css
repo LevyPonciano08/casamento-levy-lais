@@ -91,7 +91,7 @@ body{padding-top:94px}
 }
 
 /* A single, generous photograph keeps this chapter calm while the controls invite exploration. */
-.story-carousel{position:relative;width:min(100%,680px);margin:58px auto 46px}
+.story-carousel{position:relative;width:min(100%,560px);margin:58px auto 46px}
 .story-carousel-viewport{overflow:hidden;border:1px solid var(--line);background:var(--white);padding:11px}
 .story-carousel-track{display:flex;transition:transform .55s cubic-bezier(.22,.61,.36,1);will-change:transform}
 .story-carousel .story-photo{flex:0 0 100%;width:100%;margin:0;padding:0;border:0;transform:none}
@@ -101,5 +101,5 @@ body{padding-top:94px}
 .carousel-button:hover{background:var(--serenity)}
 .carousel-position{min-width:57px;color:var(--ink);font-size:12px;letter-spacing:1.5px;font-variant-numeric:tabular-nums}
 .carousel-position i{font-style:normal;color:var(--muted);padding:0 4px}
-@media(max-width:600px){.story-carousel{width:100%;max-width:360px;margin:42px auto 34px}.story-carousel-viewport{padding:7px}.story-carousel-controls{position:absolute;z-index:1;left:12px;right:12px;top:50%;margin:0;transform:translateY(-50%);justify-content:space-between;pointer-events:none}.carousel-button{width:46px;height:46px;background:var(--white);pointer-events:auto}.carousel-position{display:none}}
+@media(max-width:600px){.story-carousel{width:100%;max-width:320px;margin:42px auto 34px}.story-carousel-viewport{padding:7px}.story-carousel-controls{position:absolute;z-index:1;left:12px;right:12px;top:50%;margin:0;transform:translateY(-50%);justify-content:space-between;pointer-events:none}.carousel-button{width:46px;height:46px;background:var(--white);pointer-events:auto}.carousel-position{display:none}}
 @media(prefers-reduced-motion:reduce){.story-carousel-track{transition:none}}
