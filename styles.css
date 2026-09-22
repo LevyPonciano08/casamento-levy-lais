@@ -92,14 +92,14 @@ body{padding-top:94px}
 
 /* A single, generous photograph keeps this chapter calm while the controls invite exploration. */
 .story-carousel{position:relative;width:min(100%,560px);margin:58px auto 46px}
-.story-carousel-viewport{overflow:hidden;border:1px solid var(--line);background:var(--white);padding:11px}
+.story-carousel-viewport{overflow:hidden}
 .story-carousel-track{display:flex;transition:transform .55s cubic-bezier(.22,.61,.36,1);will-change:transform}
-.story-carousel .story-photo{flex:0 0 100%;width:100%;margin:0;padding:0;border:0;transform:none}
+.story-carousel .story-photo{flex:0 0 100%;width:100%;margin:0;padding:11px;border:1px solid var(--line);background:var(--white);transform:none}
 .story-carousel .story-photo img{width:100%;aspect-ratio:3/4;object-fit:cover}
 .story-carousel-controls{display:flex;align-items:center;justify-content:center;gap:20px;margin-top:20px}
 .carousel-button{display:grid;place-items:center;width:48px;height:48px;border:1px solid #647C90;border-radius:50%;background:transparent;cursor:pointer;font-size:21px;line-height:1;transition:background .2s,color .2s}
 .carousel-button:hover{background:var(--serenity)}
 .carousel-position{min-width:57px;color:var(--ink);font-size:12px;letter-spacing:1.5px;font-variant-numeric:tabular-nums}
 .carousel-position i{font-style:normal;color:var(--muted);padding:0 4px}
-@media(max-width:600px){.story-carousel{width:100%;max-width:320px;margin:42px auto 34px}.story-carousel-viewport{padding:7px}.story-carousel-controls{position:absolute;z-index:1;left:12px;right:12px;top:50%;margin:0;transform:translateY(-50%);justify-content:space-between;pointer-events:none}.carousel-button{width:46px;height:46px;background:var(--white);pointer-events:auto}.carousel-position{display:none}}
+@media(max-width:600px){.story-carousel{width:100%;max-width:320px;margin:42px auto 34px}.story-carousel .story-photo{padding:7px}.story-carousel-controls{position:absolute;z-index:1;left:12px;right:12px;top:50%;margin:0;transform:translateY(-50%);justify-content:space-between;pointer-events:none}.carousel-button{width:46px;height:46px;background:var(--white);pointer-events:auto}.carousel-position{display:none}}
 @media(prefers-reduced-motion:reduce){.story-carousel-track{transition:none}}
