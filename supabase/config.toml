@@ -2,23 +2,34 @@ project_id = "casamento-levy-lais"
 
 [api]
 enabled = true
-port = 54321
+port = 54421
 schemas = ["public", "graphql_public"]
 extra_search_path = ["public", "extensions"]
 max_rows = 1000
 
 [db]
-port = 54322
+port = 54422
+shadow_port = 54420
 major_version = 17
 
 [studio]
 enabled = true
-port = 54323
+port = 54423
 
 [auth]
 enabled = true
-site_url = "http://127.0.0.1:8765"
-additional_redirect_urls = ["https://levyponciano08.github.io/casamento-levy-lais/admin.html"]
+site_url = "https://levyponciano08.github.io/casamento-levy-lais"
+additional_redirect_urls = ["http://127.0.0.1:8765/admin.html", "https://levyponciano08.github.io/casamento-levy-lais/admin.html"]
+
+[local_smtp]
+enabled = true
+port = 54424
+
+[analytics]
+enabled = true
+port = 54427
+vector_port = 54428
+backend = "postgres"
 
 [functions.create-checkout]
 verify_jwt = false

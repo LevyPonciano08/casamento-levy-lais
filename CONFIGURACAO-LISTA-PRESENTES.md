@@ -54,7 +54,7 @@ O painel não permite cadastro público. Somente usuários presentes em `admin_u
 
 1. Acesse <https://www.mercadopago.com.br/developers/panel/app>.
 2. Crie uma aplicação de pagamentos on-line com Checkout Pro.
-3. Comece com o Access Token de teste, que possui prefixo `TEST-`.
+3. Comece com o Access Token das credenciais de teste geradas para a aplicação. Atualmente ele pode usar o prefixo `APP_USR`; confirme sempre que está na seção **Credenciais de teste** antes de copiá-lo.
 4. Não coloque o Access Token no navegador, nos arquivos do site ou no GitHub.
 
 ## 5. Criar a proteção gratuita contra robôs
@@ -129,7 +129,7 @@ A URL e a chave pública podem ficar no site. O Access Token do Mercado Pago e a
 5. Teste pagamento aprovado, recusado, pendente e abandonado.
 6. Confirme que quantidade e cota restante são atualizadas.
 
-Somente depois desses testes substitua o token `TEST-` pelo Access Token de produção, atualize o webhook para produção e faça uma compra real de valor baixo.
+Somente depois desses testes substitua o Access Token de teste pelo Access Token de produção, atualize o webhook para produção e faça uma compra real de valor baixo.
 
 ## 10. Publicar as páginas
 

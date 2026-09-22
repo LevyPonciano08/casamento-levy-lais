@@ -6,4 +6,5 @@ MEMORIA-SITE-CASAMENTO.md
 .env.*
 !.env.example
 supabase/.temp/
+supabase/.branches/
 supabase/functions/.env

@@ -1,10 +1,10 @@
 export const registryConfig = Object.freeze({
-  supabaseUrl: '',
-  supabasePublishableKey: '',
-  createCheckoutUrl: '',
+  supabaseUrl: 'https://pszrshbwqxeefhoxfkyk.supabase.co',
+  supabasePublishableKey: 'sb_publishable_DemlV9A14gxg2KUOqNK0Hg_G8A1jo1-',
+  createCheckoutUrl: 'https://pszrshbwqxeefhoxfkyk.supabase.co/functions/v1/create-checkout',
   turnstileSiteKey: '',
   siteUrl: 'https://levyponciano08.github.io/casamento-levy-lais',
-  demoMode: true
+  demoMode: false
 });
 
 export const demoGifts = Object.freeze([

@@ -27,6 +27,8 @@ jobs:
         run: |
           mkdir site
           cp index.html styles.css script.js site/
+          cp presentes.html registry.css registry.js registry-config.js pagamento.html site/
+          cp admin.html admin.css admin.js site/
           cp -R assets img site/
       - uses: actions/upload-pages-artifact@v3
         with:

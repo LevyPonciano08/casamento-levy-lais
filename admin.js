@@ -1,9 +1,11 @@
-import { registryConfig, demoGifts } from './registry-config.js';
+import { registryConfig, demoGifts } from './registry-config.js?v=20260922-live';
 
 const configured = !registryConfig.demoMode && registryConfig.supabaseUrl && registryConfig.supabasePublishableKey;
 const loginPanel = document.querySelector('.login-panel');
-const loginForm = document.querySelector('.login-form');
+const loginForm = document.querySelector('#admin-login-form');
 const loginStatus = document.querySelector('.login-status');
+const passwordSetupForm = document.querySelector('.password-setup-form');
+const passwordStatus = document.querySelector('.password-status');
 const shell = document.querySelector('.admin-shell');
 const editor = document.querySelector('.gift-editor');
 const giftForm = document.querySelector('.gift-editor-form');
@@ -259,6 +261,16 @@ async function openAuthenticatedPanel(user) {
   try { await loadDashboard(); } catch (error) { console.error(error); panelStatus.textContent = 'Não foi possível carregar o painel.'; }
 }
 
+function showPasswordSetup(user) {
+  sessionUser = user;
+  document.querySelector('#login-title').textContent = 'Crie sua senha';
+  document.querySelector('.login-intro').textContent = 'Defina uma senha segura para concluir seu acesso ao painel.';
+  loginForm.hidden = true;
+  passwordSetupForm.hidden = false;
+  passwordSetupForm.elements.email.value = user.email || '';
+  passwordSetupForm.elements.password.focus();
+}
+
 loginForm.addEventListener('submit', async (event) => {
   event.preventDefault();
   if (!configured) {
@@ -274,6 +286,27 @@ loginForm.addEventListener('submit', async (event) => {
   else await openAuthenticatedPanel(data.user);
 });
 
+passwordSetupForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const password = passwordSetupForm.elements.password.value;
+  const confirmation = passwordSetupForm.elements.passwordConfirmation.value;
+  if (password !== confirmation) {
+    passwordStatus.textContent = 'As senhas precisam ser iguais.';
+    return;
+  }
+  const submit = passwordSetupForm.querySelector('button');
+  submit.disabled = true;
+  passwordStatus.textContent = 'Salvando sua senha...';
+  const { data, error } = await supabase.auth.updateUser({ password });
+  submit.disabled = false;
+  if (error) {
+    passwordStatus.textContent = 'Não foi possível salvar a senha. Solicite um novo convite e tente novamente.';
+    return;
+  }
+  history.replaceState({}, document.title, location.pathname);
+  await openAuthenticatedPanel(data.user || sessionUser);
+});
+
 document.querySelector('.logout-button').addEventListener('click', async () => {
   if (supabase) await supabase.auth.signOut();
   location.reload();
@@ -286,9 +319,14 @@ async function initialize() {
     showShell();
     return;
   }
+  const authFlowType = new URLSearchParams(location.hash.slice(1)).get('type');
   const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
   supabase = createClient(registryConfig.supabaseUrl, registryConfig.supabasePublishableKey);
   const { data } = await supabase.auth.getSession();
+  if (data.session?.user && ['invite', 'recovery'].includes(authFlowType)) {
+    showPasswordSetup(data.session.user);
+    return;
+  }
   if (data.session?.user) await openAuthenticatedPanel(data.session.user);
 }
 

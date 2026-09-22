@@ -1,4 +1,4 @@
-import { registryConfig, demoGifts } from './registry-config.js';
+import { registryConfig, demoGifts } from './registry-config.js?v=20260922-live';
 
 const grid = document.querySelector('.gift-grid');
 const catalogStatus = document.querySelector('.catalog-status');

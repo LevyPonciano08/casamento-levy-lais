@@ -18,12 +18,19 @@
       <span class="admin-monogram" aria-hidden="true"></span>
       <p class="eyebrow">Área do casal</p>
       <h1 id="login-title">Lista de presentes</h1>
-      <p>Entre com o e-mail de administrador para cuidar do catálogo e acompanhar os pagamentos.</p>
-      <form class="login-form">
+      <p class="login-intro">Entre com o e-mail de administrador para cuidar do catálogo e acompanhar os pagamentos.</p>
+      <form class="login-form" id="admin-login-form">
         <label>E-mail<input name="email" type="email" autocomplete="username" required></label>
         <label>Senha<input name="password" type="password" autocomplete="current-password" minlength="8" required></label>
         <button type="submit">Entrar no painel <span>→</span></button>
         <p class="login-status" role="status"></p>
+      </form>
+      <form class="login-form password-setup-form" hidden>
+        <label>E-mail<input name="email" type="email" autocomplete="username" readonly></label>
+        <label>Nova senha<input name="password" type="password" autocomplete="new-password" minlength="8" required></label>
+        <label>Confirmar nova senha<input name="passwordConfirmation" type="password" autocomplete="new-password" minlength="8" required></label>
+        <button type="submit">Criar senha e entrar <span>→</span></button>
+        <p class="password-status login-status" role="status"></p>
       </form>
     </section>
 
@@ -101,6 +108,6 @@
     </form>
   </dialog>
 
-  <script type="module" src="admin.js?v=20260922-1"></script>
+  <script type="module" src="admin.js?v=20260922-live"></script>
 </body>
 </html>
