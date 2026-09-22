@@ -202,7 +202,7 @@ function loadTurnstile() {
       container.hidden = false;
       turnstileWidgetId = window.turnstile.render(container, {
         sitekey: registryConfig.turnstileSiteKey,
-        language: 'pt-BR',
+        language: 'pt-br',
         theme: 'light',
         size: 'flexible',
         callback: (token) => { turnstileToken = token; },
