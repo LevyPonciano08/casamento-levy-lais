@@ -151,9 +151,10 @@ Deno.serve(async (request) => {
     });
 
     const preference = await preferenceResponse.json();
-    const checkoutUrl = mercadoPagoToken.startsWith('TEST-')
-      ? preference.sandbox_init_point ?? preference.init_point
-      : preference.init_point;
+    const mercadoPagoEnvironment = (Deno.env.get('MERCADO_PAGO_ENVIRONMENT') ?? 'test').toLowerCase();
+    const checkoutUrl = mercadoPagoEnvironment === 'production'
+      ? preference.init_point
+      : preference.sandbox_init_point;
     if (!preferenceResponse.ok || !preference.id || !checkoutUrl) {
       await supabase.from('gift_orders').update({ status: 'cancelled' }).eq('id', order.id);
       console.error('Mercado Pago preference error', preferenceResponse.status, preference);

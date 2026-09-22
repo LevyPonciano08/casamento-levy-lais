@@ -78,7 +78,7 @@ npx supabase functions deploy create-checkout
 npx supabase functions deploy mercado-pago-webhook
 ```
 
-Preencha o arquivo `.env` com o Access Token de teste e a Secret key do Turnstile. Nesse primeiro deploy, a chave do webhook pode ser temporária até o passo seguinte. O arquivo `.env` não deve ser enviado ao GitHub.
+Preencha o arquivo `.env` com o Access Token de teste e a Secret key do Turnstile. Mantenha `MERCADO_PAGO_ENVIRONMENT=test` durante toda a homologação; altere para `production` somente depois dos testes e junto com o Access Token de produção. Nesse primeiro deploy, a chave do webhook pode ser temporária até o passo seguinte. O arquivo `.env` não deve ser enviado ao GitHub.
 
 Depois de publicar, a URL do webhook será:
 
