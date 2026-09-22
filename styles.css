@@ -103,3 +103,10 @@ body{padding-top:94px}
 .carousel-position i{font-style:normal;color:var(--muted);padding:0 4px}
 @media(max-width:600px){.story-carousel{width:100%;max-width:320px;margin:42px auto 34px}.story-carousel .story-photo{padding:7px}.story-carousel-controls{position:absolute;z-index:1;left:12px;right:12px;top:50%;margin:0;transform:translateY(-50%);justify-content:space-between;pointer-events:none}.carousel-button{width:46px;height:46px;background:var(--white);pointer-events:auto}.carousel-position{display:none}}
 @media(prefers-reduced-motion:reduce){.story-carousel-track{transition:none}}
+
+/* Live registry entry point: quiet, direct and consistent with the editorial links. */
+.text-link:not(:disabled){display:inline-flex;align-items:center;color:var(--ink);border-bottom-color:var(--serenity);cursor:pointer}
+.text-link:not(:disabled) span{transition:transform .2s ease}
+.text-link:not(:disabled):hover{text-decoration:underline;text-underline-offset:5px}
+.text-link:not(:disabled):hover span{transform:translate(2px,-2px)}
+.site-header nav a[href="admin.html"]{color:var(--muted)}
