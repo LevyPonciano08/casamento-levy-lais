@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#E8EDF0">
+  <meta name="robots" content="noindex">
+  <title>Pagamento — Levy & Laís</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Italiana&family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400&display=swap" rel="stylesheet">
+  <link rel="icon" href="assets/LL.png" type="image/png">
+  <link rel="stylesheet" href="registry.css?v=20260922-1">
+</head>
+<body class="payment-page">
+  <main class="payment-result">
+    <span class="monogram large" aria-hidden="true"></span>
+    <p class="eyebrow">Lista de presentes</p>
+    <h1>Recebemos<br><em>o seu retorno.</em></h1>
+    <p class="payment-message" role="status"></p>
+    <div class="payment-actions">
+      <a class="primary-link" href="presentes.html">Voltar à lista <span aria-hidden="true">→</span></a>
+      <a class="secondary-link" href="index.html">Ir para o site do casamento</a>
+    </div>
+    <small>A confirmação final depende do processamento do Mercado Pago e pode levar alguns instantes.</small>
+  </main>
+  <script>
+    const state = new URLSearchParams(location.search).get('retorno');
+    const messages = {
+      sucesso: 'Obrigada pelo carinho! O retorno indica que o pagamento foi aprovado e a confirmação final será registrada para os noivos.',
+      pendente: 'Seu pagamento está sendo processado. Assim que o Mercado Pago confirmar, ele aparecerá para os noivos.',
+      falha: 'O pagamento não foi concluído. Você pode voltar à lista e tentar novamente quando desejar.'
+    };
+    document.querySelector('.payment-message').textContent = messages[state] || 'Consulte o resultado no Mercado Pago ou volte à lista para escolher um presente.';
+  </script>
+</body>
+</html>

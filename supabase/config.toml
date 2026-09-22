@@ -1,0 +1,27 @@
+project_id = "casamento-levy-lais"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+major_version = 17
+
+[studio]
+enabled = true
+port = 54323
+
+[auth]
+enabled = true
+site_url = "http://127.0.0.1:8765"
+additional_redirect_urls = ["https://levyponciano08.github.io/casamento-levy-lais/admin.html"]
+
+[functions.create-checkout]
+verify_jwt = false
+
+[functions.mercado-pago-webhook]
+verify_jwt = false

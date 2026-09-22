@@ -1,5 +1,7 @@
 # Plano da lista de presentes
 
+> Status em 22/09/2026: interfaces, banco e funções implementados localmente em modo de prévia. Falta conectar as contas, aplicar a migração e executar pagamentos de teste conforme `CONFIGURACAO-LISTA-PRESENTES.md`.
+
 ## Decisão recomendada
 
 Manter o site público no GitHub Pages e acrescentar:

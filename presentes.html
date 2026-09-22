@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Lista de presentes do casamento de Levy e Laís.">
+  <meta name="theme-color" content="#E8EDF0">
+  <title>Lista de presentes — Levy & Laís</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Italiana&family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400&display=swap" rel="stylesheet">
+  <link rel="icon" href="assets/LL.png" type="image/png">
+  <link rel="stylesheet" href="registry.css?v=20260922-1">
+</head>
+<body>
+  <a class="skip-link" href="#catalogo">Pular para os presentes</a>
+  <header class="registry-header">
+    <a class="brand" href="index.html" aria-label="Voltar ao site de Levy e Laís">
+      <span class="monogram" aria-hidden="true"></span>
+      <span>Levy <i>&</i> Laís</span>
+    </a>
+    <a class="back-link" href="index.html">Voltar ao casamento <span aria-hidden="true">↗</span></a>
+  </header>
+
+  <main>
+    <section class="registry-hero">
+      <div>
+        <p class="eyebrow">Lista de presentes</p>
+        <h1>Um carinho para<br><em>o nosso começo.</em></h1>
+      </div>
+      <p class="hero-note">Sua presença é o mais importante. Se desejar nos presentear, escolha abaixo uma lembrança ou participe de uma experiência da nossa nova vida.</p>
+    </section>
+
+    <aside class="demo-notice" id="demo-notice" hidden>
+      <strong>Prévia da lista</strong>
+      <span>O catálogo já funciona, mas os pagamentos ainda serão conectados às contas do casal.</span>
+    </aside>
+
+    <section class="catalog-section" id="catalogo" aria-labelledby="catalog-heading">
+      <header class="catalog-heading">
+        <div>
+          <p class="eyebrow">Escolha com carinho</p>
+          <h2 id="catalog-heading">Presentes e experiências</h2>
+        </div>
+        <div class="category-filters" aria-label="Filtrar presentes"></div>
+      </header>
+      <p class="catalog-status" role="status">Carregando presentes...</p>
+      <div class="gift-grid" aria-live="polite"></div>
+    </section>
+
+    <section class="registry-help">
+      <div class="monogram large" aria-hidden="true"></div>
+      <div>
+        <p class="eyebrow">Pagamento seguro</p>
+        <h2>Pix ou cartão,<br>você escolhe.</h2>
+        <p>Ao continuar, o pagamento é concluído no ambiente protegido do Mercado Pago. Os dados do cartão não passam por este site.</p>
+      </div>
+    </section>
+  </main>
+
+  <dialog class="gift-dialog" aria-labelledby="dialog-title">
+    <button class="dialog-close" type="button" aria-label="Fechar">×</button>
+    <div class="dialog-intro">
+      <p class="eyebrow">Seu presente</p>
+      <h2 id="dialog-title"></h2>
+      <p class="dialog-price"></p>
+    </div>
+    <form class="gift-form">
+      <input type="hidden" name="giftId">
+      <div class="field contribution-field" hidden>
+        <label for="gift-amount">Valor da contribuição</label>
+        <div class="money-input"><span>R$</span><input id="gift-amount" name="amount" type="text" inputmode="decimal" autocomplete="off" placeholder="100,00"></div>
+        <small class="amount-help"></small>
+      </div>
+      <div class="field quantity-field" hidden>
+        <label for="gift-quantity">Quantidade</label>
+        <select id="gift-quantity" name="quantity"></select>
+      </div>
+      <div class="field">
+        <label for="guest-name">Seu nome</label>
+        <input id="guest-name" name="guestName" type="text" autocomplete="name" maxlength="120" required>
+      </div>
+      <div class="field">
+        <label for="guest-email">Seu e-mail</label>
+        <input id="guest-email" name="guestEmail" type="email" autocomplete="email" maxlength="254" required>
+        <small>Usaremos apenas para identificar o pagamento.</small>
+      </div>
+      <div class="field">
+        <label for="guest-message">Mensagem para os noivos <span>(opcional)</span></label>
+        <textarea id="guest-message" name="guestMessage" rows="3" maxlength="1000"></textarea>
+      </div>
+      <label class="check-field"><input type="checkbox" name="publicName"><span>Meu nome pode aparecer para os noivos na lista de quem presenteou.</span></label>
+      <div class="turnstile-container" hidden aria-label="Verificação de segurança"></div>
+      <button class="checkout-button" type="submit"><span>Continuar para o pagamento</span><i aria-hidden="true">→</i></button>
+      <p class="form-status" role="status"></p>
+    </form>
+  </dialog>
+
+  <footer><span>9 de janeiro de 2027</span><span>Levy & Laís</span><a href="index.html">Voltar ao site</a></footer>
+  <script type="module" src="registry.js?v=20260922-1"></script>
+</body>
+</html>
