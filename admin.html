@@ -98,6 +98,7 @@
         <label>Valor total (R$)<input name="price" inputmode="decimal" placeholder="250,00" required></label>
         <label class="minimum-field" hidden>Contribuição mínima (R$)<input name="minimum" inputmode="decimal" placeholder="50,00"></label>
         <label class="quantity-field">Quantidade disponível<input name="quantity" type="number" min="1" max="100" value="1" required></label>
+        <label class="toggle span-two repeatable-field"><input name="unlimitedPurchases" type="checkbox"><span>Continuar disponível após cada compra (sem limite de unidades)</span></label>
         <label>Ordem de exibição<input name="sortOrder" type="number" min="0" max="999" value="0" required></label>
         <label class="span-two">Descrição<textarea name="description" rows="4" maxlength="2000"></textarea></label>
         <label class="span-two image-field">Imagem <small>JPG, PNG ou WebP, até 5 MB</small><input name="image" type="file" accept="image/jpeg,image/png,image/webp"></label>
@@ -108,6 +109,6 @@
     </form>
   </dialog>
 
-  <script type="module" src="admin.js?v=20260922-live"></script>
+  <script type="module" src="admin.js?v=20260923-repeatable"></script>
 </body>
 </html>

@@ -75,7 +75,7 @@ function renderGifts() {
     const price = document.createElement('strong');
     price.textContent = formatMoney(gift.price_cents);
     const mode = document.createElement('span');
-    mode.textContent = gift.gift_mode === 'quota' ? 'Cotas' : `${gift.quantity_total} unidade(s)`;
+    mode.textContent = gift.gift_mode === 'quota' ? 'Cotas' : gift.unlimited_purchases ? 'Compras ilimitadas' : `${gift.quantity_total} unidade(s)`;
     meta.append(price, mode);
     const state = document.createElement('span');
     state.className = `status-pill${gift.is_active === false ? ' inactive' : ''}`;
@@ -117,10 +117,12 @@ function renderOrders() {
 
 function updateModeFields() {
   const quota = giftForm.elements.giftMode.value === 'quota';
+  const unlimited = !quota && giftForm.elements.unlimitedPurchases.checked;
   document.querySelector('.minimum-field').hidden = !quota;
-  document.querySelector('.quantity-field').hidden = quota;
+  document.querySelector('.quantity-field').hidden = quota || unlimited;
+  document.querySelector('.repeatable-field').hidden = quota;
   giftForm.elements.minimum.required = quota;
-  giftForm.elements.quantity.required = !quota;
+  giftForm.elements.quantity.required = !quota && !unlimited;
 }
 
 function openEditor(gift = null) {
@@ -133,6 +135,7 @@ function openEditor(gift = null) {
   giftForm.elements.price.value = gift ? inputMoney(gift.price_cents) : '';
   giftForm.elements.minimum.value = gift?.minimum_contribution_cents ? inputMoney(gift.minimum_contribution_cents) : '';
   giftForm.elements.quantity.value = gift?.quantity_total || 1;
+  giftForm.elements.unlimitedPurchases.checked = gift?.unlimited_purchases === true;
   giftForm.elements.sortOrder.value = gift?.sort_order || 0;
   giftForm.elements.description.value = gift?.description || '';
   giftForm.elements.isActive.checked = gift?.is_active !== false;
@@ -163,6 +166,7 @@ async function uploadImage(file) {
 }
 
 giftForm.elements.giftMode.addEventListener('change', updateModeFields);
+giftForm.elements.unlimitedPurchases.addEventListener('change', updateModeFields);
 giftForm.addEventListener('submit', async (event) => {
   event.preventDefault();
   if (!giftForm.reportValidity()) return;
@@ -190,6 +194,7 @@ giftForm.addEventListener('submit', async (event) => {
       price_cents: price,
       minimum_contribution_cents: minimum,
       quantity_total: mode === 'unit' ? Number(giftForm.elements.quantity.value) : 1,
+      unlimited_purchases: mode === 'unit' && giftForm.elements.unlimitedPurchases.checked,
       sort_order: Number(giftForm.elements.sortOrder.value),
       image_path: newImage || giftForm.elements.imagePath.value || null,
       is_active: giftForm.elements.isActive.checked
@@ -239,7 +244,7 @@ document.querySelectorAll('.nav-button').forEach((button) => button.addEventList
 
 async function loadDashboard() {
   const [giftResult, orderResult] = await Promise.all([
-    supabase.from('gifts').select('*').order('sort_order').order('created_at'),
+    supabase.from('gifts').select('*').is('archived_at', null).order('sort_order').order('created_at'),
     supabase.from('gift_orders').select('*, gifts(title)').order('created_at', { ascending: false })
   ]);
   if (giftResult.error) throw giftResult.error;
