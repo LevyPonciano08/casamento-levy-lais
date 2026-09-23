@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Italiana&family=Newsreader:opsz,wght@6..72,400&display=swap" rel="stylesheet">
   <link rel="icon" href="assets/LL.png" type="image/png">
-  <link rel="stylesheet" href="admin.css?v=20260922-1">
+  <link rel="stylesheet" href="admin.css?v=20260923-delete">
 </head>
 <body>
   <main>
@@ -95,8 +95,8 @@
         <label class="span-two">Nome do presente<input name="title" maxlength="120" required></label>
         <label>Categoria<input name="category" maxlength="60" placeholder="Casa nova" required></label>
         <label>Tipo<select name="giftMode"><option value="unit">Valor por unidade</option><option value="quota">Cotas / contribuição livre</option></select></label>
-        <label>Valor total (R$)<input name="price" inputmode="decimal" placeholder="250,00" required></label>
-        <label class="minimum-field" hidden>Contribuição mínima (R$)<input name="minimum" inputmode="decimal" placeholder="50,00"></label>
+        <label>Valor total (R$)<input name="price" inputmode="decimal" placeholder="0,01" required></label>
+        <label class="minimum-field" hidden>Contribuição mínima (R$)<input name="minimum" inputmode="decimal" placeholder="0,01"></label>
         <label class="quantity-field">Quantidade disponível<input name="quantity" type="number" min="1" max="100" value="1" required></label>
         <label class="toggle span-two repeatable-field"><input name="unlimitedPurchases" type="checkbox"><span>Continuar disponível após cada compra (sem limite de unidades)</span></label>
         <label>Ordem de exibição<input name="sortOrder" type="number" min="0" max="999" value="0" required></label>
@@ -109,6 +109,6 @@
     </form>
   </dialog>
 
-  <script type="module" src="admin.js?v=20260923-repeatable"></script>
+  <script type="module" src="admin.js?v=20260923-min-amount"></script>
 </body>
 </html>

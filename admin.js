@@ -88,7 +88,11 @@ function renderGifts() {
     const toggle = document.createElement('button');
     toggle.type = 'button'; toggle.textContent = gift.is_active === false ? 'Ativar' : 'Ocultar';
     toggle.addEventListener('click', () => toggleGift(gift));
-    actions.append(edit, toggle);
+    const remove = document.createElement('button');
+    remove.type = 'button'; remove.textContent = 'Excluir';
+    remove.setAttribute('aria-label', `Excluir ${gift.title}`);
+    remove.addEventListener('click', () => deleteGift(gift, remove));
+    actions.append(edit, toggle, remove);
     row.append(imageNode(gift), main, meta, state, actions);
     return row;
   }));
@@ -155,6 +159,34 @@ async function toggleGift(gift) {
   else await loadDashboard();
 }
 
+async function deleteGift(gift, button) {
+  if (!configured) {
+    panelStatus.textContent = 'Conecte o Supabase para excluir presentes.';
+    return;
+  }
+  if (!window.confirm(`Excluir "${gift.title}" da lista? Se houver pedidos vinculados, o presente será arquivado para preservar o histórico de pagamentos.`)) return;
+
+  button.disabled = true;
+  panelStatus.textContent = 'Excluindo presente...';
+  try {
+    const { data, error } = await supabase.from('gifts').delete().eq('id', gift.id).select('id');
+    if (error?.code === '23503') {
+      const { data: archived, error: archiveError } = await supabase.from('gifts')
+        .update({ is_active: false, archived_at: new Date().toISOString() })
+        .eq('id', gift.id)
+        .select('id');
+      if (archiveError || !archived?.length) throw archiveError || new Error('Não foi possível arquivar este presente.');
+    } else if (error || !data?.length) {
+      throw error || new Error('Não foi possível excluir este presente.');
+    }
+    await loadDashboard();
+  } catch (error) {
+    console.error(error);
+    panelStatus.textContent = 'Não foi possível excluir este presente. Tente novamente.';
+    button.disabled = false;
+  }
+}
+
 async function uploadImage(file) {
   if (!file?.size) return null;
   if (file.size > 5 * 1024 * 1024) throw new Error('A imagem deve ter no máximo 5 MB.');
@@ -182,8 +214,8 @@ giftForm.addEventListener('submit', async (event) => {
     const mode = giftForm.elements.giftMode.value;
     const price = parseMoney(giftForm.elements.price.value);
     const minimum = mode === 'quota' ? parseMoney(giftForm.elements.minimum.value) : null;
-    if (price < 500 || (mode === 'quota' && (minimum < 500 || minimum > price))) {
-      throw new Error('Confira o valor total e a contribuição mínima. O mínimo aceito é R$ 5,00.');
+    if (price < 1 || (mode === 'quota' && (minimum < 1 || minimum > price))) {
+      throw new Error('Confira o valor total e a contribuição mínima. O mínimo aceito é R$ 0,01.');
     }
     const newImage = await uploadImage(giftForm.elements.image.files[0]);
     const payload = {
