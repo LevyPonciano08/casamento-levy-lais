@@ -26,7 +26,7 @@ jobs:
       - name: Preparar os arquivos públicos
         run: |
           mkdir site
-          cp index.html styles.css visual.css script.js site/
+          cp index.html styles.css script.js site/
           cp presentes.html registry.css registry.js registry-config.js pagamento.html site/
           cp admin.html admin.css admin.js site/
           cp -R assets img site/

@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#F1F5F5">
+  <meta name="theme-color" content="#E8EDF0">
   <meta name="robots" content="noindex,nofollow">
-  <title>Painel de presentes | Levy e Laís</title>
+  <title>Painel da lista — Levy & Laís</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Italiana&family=Newsreader:opsz,wght@6..72,400&display=swap" rel="stylesheet">
   <link rel="icon" href="assets/LL.png" type="image/png">
-  <link rel="stylesheet" href="admin.css?v=20260922-1"><link rel="stylesheet" href="visual.css?v=20260923-1">
+  <link rel="stylesheet" href="admin.css?v=20260922-1">
 </head>
 <body>
   <main>
@@ -22,14 +22,14 @@
       <form class="login-form" id="admin-login-form">
         <label>E-mail<input name="email" type="email" autocomplete="username" required></label>
         <label>Senha<input name="password" type="password" autocomplete="current-password" minlength="8" required></label>
-        <button type="submit">Entrar no painel</button>
+        <button type="submit">Entrar no painel <span>→</span></button>
         <p class="login-status" role="status"></p>
       </form>
       <form class="login-form password-setup-form" hidden>
         <label>E-mail<input name="email" type="email" autocomplete="username" readonly></label>
         <label>Nova senha<input name="password" type="password" autocomplete="new-password" minlength="8" required></label>
         <label>Confirmar nova senha<input name="passwordConfirmation" type="password" autocomplete="new-password" minlength="8" required></label>
-        <button type="submit">Criar senha e entrar</button>
+        <button type="submit">Criar senha e entrar <span>→</span></button>
         <p class="password-status login-status" role="status"></p>
       </form>
     </section>
@@ -44,10 +44,10 @@
         <aside class="admin-sidebar">
           <div><p class="eyebrow">Administração</p><h1>Lista de<br>presentes</h1></div>
           <nav aria-label="Seções do painel">
-            <button class="nav-button active" type="button" data-view="catalog">Presentes</button>
-            <button class="nav-button" type="button" data-view="orders">Pagamentos</button>
+            <button class="nav-button active" type="button" data-view="catalog">Presentes <span>01</span></button>
+            <button class="nav-button" type="button" data-view="orders">Pagamentos <span>02</span></button>
           </nav>
-          <a href="presentes.html" target="_blank" rel="noopener">Ver lista pública</a>
+          <a href="presentes.html" target="_blank" rel="noopener">Ver lista pública ↗</a>
         </aside>
 
         <div class="admin-content">
@@ -59,7 +59,7 @@
           <section class="dashboard-view" data-view-panel="catalog">
             <header class="view-heading">
               <div><p class="eyebrow">Catálogo</p><h2>Seus presentes</h2></div>
-              <button class="new-gift-button" type="button">Adicionar presente</button>
+              <button class="new-gift-button" type="button">Adicionar presente <span>＋</span></button>
             </header>
             <div class="stats-grid">
               <article><span>Ativos</span><strong data-stat="active">0</strong></article>
@@ -71,7 +71,7 @@
           </section>
 
           <section class="dashboard-view" data-view-panel="orders" hidden>
-            <header class="view-heading"><div><p class="eyebrow">Pagamentos</p><h2>Presentes recebidos</h2></div><button class="export-button new-gift-button" type="button">Exportar CSV</button></header>
+            <header class="view-heading"><div><p class="eyebrow">Pagamentos</p><h2>Presentes recebidos</h2></div><button class="export-button new-gift-button" type="button">Exportar CSV <span>↓</span></button></header>
             <div class="orders-table-wrap">
               <table>
                 <thead><tr><th>Convidado</th><th>Presente</th><th>Valor</th><th>Status</th><th>Forma</th><th>Mensagem</th><th>Data</th></tr></thead>
@@ -104,11 +104,11 @@
         <label class="span-two image-field">Imagem <small>JPG, PNG ou WebP, até 5 MB</small><input name="image" type="file" accept="image/jpeg,image/png,image/webp"></label>
         <label class="toggle span-two"><input name="isActive" type="checkbox" checked><span>Presente visível na lista pública</span></label>
       </div>
-      <button class="save-gift-button" type="submit">Salvar presente</button>
+      <button class="save-gift-button" type="submit">Salvar presente <span>→</span></button>
       <p class="editor-status" role="status"></p>
     </form>
   </dialog>
 
-  <script type="module" src="admin.js?v=20260923-visual"></script>
+  <script type="module" src="admin.js?v=20260923-repeatable"></script>
 </body>
 </html>

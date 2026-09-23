@@ -70,7 +70,7 @@ if (countdown) {
       .map(element => [element.dataset.countdown, element]));
     countdown.querySelector('.countdown-date').textContent = new Intl.DateTimeFormat('pt-BR', {
       dateStyle: 'long', timeStyle: 'short', timeZone: 'America/Fortaleza'
-    }).format(new Date(targetTime)) + ' · Aracati, Ceará';
+    }).format(new Date(targetTime)) + ' · Aracati/CE (horário de Brasília)';
     let countdownInterval;
     function updateCountdown() {
       const remaining = Math.max(0, Math.ceil((targetTime - Date.now()) / 1000));
@@ -81,7 +81,7 @@ if (countdown) {
         seconds: remaining % 60
       };
       for (const [key, value] of Object.entries(values)) {
-        if (fields[key]) fields[key].textContent = String(value).padStart(2, '0');
+        fields[key].textContent = String(value).padStart(2, '0');
       }
       clock.hidden = remaining === 0;
       complete.hidden = remaining !== 0;
