@@ -27,7 +27,7 @@ function element(tag, className, text) {
   return node;
 }
 
-function createGiftCard(gift, index) {
+function createGiftCard(gift) {
   const card = element('article', 'gift-card');
   const imageWrap = element('div', 'gift-image');
   const imageUrl = gift.image_url || storageImage(gift.image_path);
@@ -43,7 +43,6 @@ function createGiftCard(gift, index) {
     placeholder.append(element('span', 'monogram'));
     imageWrap.append(placeholder);
   }
-  imageWrap.append(element('span', 'gift-number', String(index + 1).padStart(2, '0')));
 
   const body = element('div', 'gift-body');
   body.append(element('p', 'gift-category', gift.category));
@@ -63,7 +62,7 @@ function createGiftCard(gift, index) {
   const available = gift.gift_mode === 'quota' ? gift.remaining_amount_cents >= gift.minimum_contribution_cents : gift.unlimited_purchases || gift.available_quantity > 0;
   const priceText = gift.gift_mode === 'quota' ? `a partir de ${formatMoney(gift.minimum_contribution_cents)}` : formatMoney(gift.price_cents);
   row.append(element('span', 'gift-price', priceText));
-  const button = element('button', 'gift-button', available ? 'Presentear →' : 'Já presenteado');
+  const button = element('button', 'gift-button', available ? 'Escolher presente' : 'Já presenteado');
   button.type = 'button';
   button.disabled = !available;
   if (available) button.addEventListener('click', () => openGift(gift));

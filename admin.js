@@ -106,8 +106,8 @@ function renderOrders() {
       order.gifts?.title || 'Presente',
       formatMoney(order.amount_cents),
       ({ created: 'Criado', approved: 'Aprovado', pending: 'Pendente', rejected: 'Recusado', cancelled: 'Cancelado', refunded: 'Estornado', expired: 'Expirado', review: 'Revisar' })[order.status] || order.status,
-      order.payment_method || '—',
-      order.guest_message || '—',
+      order.payment_method || 'Não informado',
+      order.guest_message || 'Sem mensagem',
       new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(order.created_at))
     ];
     values.forEach((value) => { const cell = document.createElement('td'); cell.textContent = value; row.append(cell); });
