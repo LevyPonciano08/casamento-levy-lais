@@ -222,7 +222,7 @@ function loadTurnstile() {
         sitekey: registryConfig.turnstileSiteKey,
         language: 'pt-br',
         theme: 'light',
-        size: 'flexible',
+        size: window.innerWidth <= 390 ? 'compact' : 'flexible',
         callback: (token) => { turnstileToken = token; },
         'expired-callback': () => { turnstileToken = ''; },
         'error-callback': () => { turnstileToken = ''; }

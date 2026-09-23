@@ -19,3 +19,16 @@
 .skip-link{top:12px;left:-9999px}.skip-link:focus{left:20px}
 [hidden]{display:none!important}
 .turnstile-container{min-height:65px;margin:0 0 20px;display:flex;justify-content:center}
+.payment-choice-dialog,.gift-dialog{overscroll-behavior:contain}
+@media(max-width:600px){
+  .back-link{display:inline-flex;align-items:center;min-height:44px}
+  .filter-button,.gift-button{min-height:44px}
+  .payment-choice-option{gap:10px}
+}
+@media(max-width:400px){
+  .payment-page{padding:16px}
+  .payment-result{padding:38px 22px}
+  .payment-result .monogram{width:60px;height:74px;margin-bottom:20px}
+  .payment-message{margin:20px auto}
+  .payment-actions{margin:22px auto}
+}

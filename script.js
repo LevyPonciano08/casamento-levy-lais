@@ -18,7 +18,7 @@ document.addEventListener('keydown', event => {
     menuButton.focus();
   }
 });
-matchMedia('(min-width: 601px)').addEventListener('change', closeMenu);
+matchMedia('(min-width: 741px)').addEventListener('change', closeMenu);
 document.querySelectorAll('details').forEach(item => item.addEventListener('toggle', () => {
   if (item.open) document.querySelectorAll('details[open]').forEach(other => {
     if (other !== item) other.open = false;

@@ -4,3 +4,15 @@
 @media(max-width:600px){.admin-header{padding:0 6%}.admin-email{display:none}.admin-sidebar{display:block}.admin-sidebar nav{margin-top:20px}.admin-content{padding:35px 6% 60px}.view-heading{align-items:stretch;flex-direction:column}.view-heading h2{font-size:40px}.new-gift-button{width:100%}.stats-grid{grid-template-columns:1fr 1fr}.stats-grid article:last-child{grid-column:1/-1}.admin-gift{grid-template-columns:52px 1fr;gap:12px}.admin-gift-image{width:52px;height:52px}.gift-actions{grid-column:2}.gift-actions button{flex:1}.setup-notice{display:block}.setup-notice strong{display:block;margin-bottom:4px}.form-grid{grid-template-columns:1fr}.span-two{grid-column:auto}.gift-editor{padding:34px 20px 25px}}
 [hidden]{display:none!important}
 .orders-table-wrap table{min-width:1050px}.orders-table-wrap td:first-child{white-space:pre-line}
+@media(max-width:600px){
+  .gift-actions{grid-column:1/-1;flex-wrap:wrap}
+  .gift-actions button{min-width:0;min-height:44px}
+  .admin-sidebar nav{display:grid;grid-template-columns:1fr 1fr}
+  .nav-button{min-width:0;gap:5px}
+}
+@media(max-width:400px){
+  .login-panel{margin:20px auto;padding:28px}
+  .login-panel>.admin-monogram{width:54px;height:66px;margin-bottom:20px}
+  .login-panel>p:not(.eyebrow){margin:15px 0 24px}
+  .login-form button{margin-top:20px}
+}
