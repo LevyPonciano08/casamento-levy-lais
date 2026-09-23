@@ -143,8 +143,14 @@ Deno.serve(async (request) => {
         expires: true,
         expiration_date_to: order.expires_at,
         payment_methods: {
-          excluded_payment_types: [{ id: 'ticket' }],
-          installments: 12
+          excluded_payment_types: [
+            { id: 'ticket' },
+            { id: 'credit_card' },
+            { id: 'debit_card' },
+            { id: 'prepaid_card' },
+            { id: 'digital_currency' }
+          ],
+          default_payment_method_id: 'pix'
         },
         metadata: { gift_id: gift.id, order_id: order.id }
       })

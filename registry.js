@@ -3,12 +3,14 @@ import { registryConfig, demoGifts } from './registry-config.js?v=20260922-turns
 const grid = document.querySelector('.gift-grid');
 const catalogStatus = document.querySelector('.catalog-status');
 const filters = document.querySelector('.category-filters');
+const paymentChoice = document.querySelector('.payment-choice-dialog');
 const dialog = document.querySelector('.gift-dialog');
 const form = document.querySelector('.gift-form');
 const formStatus = document.querySelector('.form-status');
 const demoNotice = document.querySelector('#demo-notice');
 let gifts = [];
 let activeCategory = 'Todos';
+let selectedGift = null;
 let turnstileToken = '';
 let turnstileWidgetId = null;
 
@@ -66,7 +68,7 @@ function createGiftCard(gift, index) {
   const button = element('button', 'gift-button', available ? 'Presentear →' : 'Já presenteado');
   button.type = 'button';
   button.disabled = !available;
-  if (available) button.addEventListener('click', () => openGift(gift));
+  if (available) button.addEventListener('click', () => openPaymentChoice(gift));
   row.append(button);
   body.append(row);
   card.append(imageWrap, body);
@@ -103,6 +105,22 @@ function parseAmount(value) {
   const amount = Number(normalized);
   return Number.isFinite(amount) ? Math.round(amount * 100) : 0;
 }
+
+function openPaymentChoice(gift) {
+  selectedGift = gift;
+  paymentChoice.querySelector('.payment-choice-gift').textContent = gift.title;
+  paymentChoice.showModal();
+}
+
+paymentChoice.querySelector('.dialog-close').addEventListener('click', () => paymentChoice.close());
+paymentChoice.addEventListener('click', (event) => {
+  if (event.target === paymentChoice) paymentChoice.close();
+});
+paymentChoice.querySelector('.pix-option').addEventListener('click', () => {
+  if (!selectedGift) return;
+  paymentChoice.close();
+  openGift(selectedGift);
+});
 
 function openGift(gift) {
   form.reset();
