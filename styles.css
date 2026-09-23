@@ -123,9 +123,7 @@ body{padding-top:94px}
 /* Persistent shortcut: the basket is recognizable first, the label adds intent on wider screens. */
 .floating-gifts-cta{position:fixed;right:max(22px,env(safe-area-inset-right));bottom:max(22px,env(safe-area-inset-bottom));z-index:19;display:inline-flex;align-items:center;gap:10px;min-height:54px;padding:0 18px;border:1px solid var(--ink);background:var(--ink);box-shadow:4px 4px 0 var(--serenity);color:var(--white);font-size:13px;font-weight:500;line-height:1;isolation:isolate;transition:transform .2s ease,box-shadow .2s ease,background .2s ease}
 .floating-gifts-cta svg{width:21px;height:21px;flex:0 0 auto}
-.floating-gifts-cta::before{content:"";position:absolute;z-index:-1;inset:-7px;border:1px solid rgba(120,152,181,.7);opacity:0;animation:gift-cta-halo 2.8s ease-out infinite}
 .floating-gifts-cta:hover{background:#435564;transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--serenity)}
-@keyframes gift-cta-halo{0%,58%{transform:scale(.92);opacity:0}72%{opacity:.7}100%{transform:scale(1.12);opacity:0}}
 
 @media(max-width:600px){
   .hero-actions{justify-content:center;flex-direction:column;gap:22px}
