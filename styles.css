@@ -159,3 +159,19 @@ body{padding-top:94px}
 .floating-gifts-cta.is-hidden{display:none}
 @media(max-width:900px){.rsvp{grid-template-columns:1fr;padding:50px 5%;gap:28px}}
 @media(max-width:600px){.rsvp{margin:28px 7% 0;padding:38px 6%;gap:24px}}
+
+/* A quiet, useful closing navigation for the wedding site. */
+.site-footer{display:block;padding:0 8%;background:var(--white);border-top:1px solid var(--line);color:var(--ink)}
+.footer-main{display:flex;align-items:center;justify-content:space-between;gap:42px;padding:42px 0}
+.footer-brand{display:inline-flex;align-items:center;gap:15px;min-width:220px}
+.footer-brand .monogram-art{width:31px;height:38px;flex:none}
+.footer-brand strong{display:block;font:400 27px/1.1 var(--display);letter-spacing:.02em}
+.footer-brand small{display:block;margin-top:4px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.footer-nav{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:10px 30px}
+.footer-nav a,.footer-bottom a{font-size:13px;min-height:40px;display:inline-flex;align-items:center}
+.footer-nav a:hover,.footer-bottom a:hover{text-decoration:underline;text-underline-offset:5px}
+.footer-bottom{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:16px 0 20px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+.footer-bottom a{color:var(--ink);white-space:nowrap}
+.footer-bottom a span{margin-left:8px}
+@media(max-width:900px){.footer-main{align-items:flex-start;flex-direction:column;gap:25px}.footer-nav{justify-content:flex-start}}
+@media(max-width:600px){.site-footer{padding:0 7%}.footer-main{padding:34px 0 24px;gap:28px}.footer-nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px 14px;width:100%}.footer-nav a{font-size:13px}.footer-bottom{align-items:flex-start;flex-direction:column;gap:4px;padding:16px 0 22px;line-height:1.55}}

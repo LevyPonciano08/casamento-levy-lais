@@ -109,9 +109,16 @@ loadRsvpTurnstile();
 
 const floatingGiftsLink = document.querySelector('.floating-gifts-cta');
 if (floatingGiftsLink && 'IntersectionObserver' in window) {
-  new IntersectionObserver(([entry]) => {
-    floatingGiftsLink.classList.toggle('is-hidden', entry.isIntersecting);
-  }, { threshold: 0 }).observe(document.querySelector('#rsvp'));
+  const coveredSections = new Set();
+  const floatingLinkObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) coveredSections.add(entry.target);
+      else coveredSections.delete(entry.target);
+    });
+    floatingGiftsLink.classList.toggle('is-hidden', coveredSections.size > 0);
+  }, { threshold: 0 });
+  floatingLinkObserver.observe(document.querySelector('#rsvp'));
+  floatingLinkObserver.observe(document.querySelector('.site-footer'));
 }
 
 const header = document.querySelector('.site-header');
