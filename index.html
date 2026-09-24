@@ -6,7 +6,7 @@
   <title>Levy & Laís — Nosso casamento</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Italiana&family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400&display=swap" rel="stylesheet">
-  <link rel="icon" href="assets/LL.png" type="image/png"><link rel="stylesheet" href="styles.css?v=20260923-mobile-layout">
+  <link rel="icon" href="assets/LL.png" type="image/png"><link rel="stylesheet" href="styles.css?v=20260924-rsvp">
 </head>
 <body>
   <a class="skip-link" href="#historia">Pular para o conteúdo</a>
@@ -21,15 +21,9 @@
       <figure class="hero-photo"><img src="img/IMG_3948.JPG" alt="Levy e Laís abraçados e sorrindo" width="2263" height="3017" fetchpriority="high"><figcaption>A vida fica mais bonita com você.</figcaption></figure>
       <div class="hero-bottom"><span>Levy & Laís · Nosso novo capítulo</span><a href="#historia">Continue a história <span>↓</span></a></div>
     </section>
-    <section class="countdown" aria-labelledby="countdown-heading" data-wedding-date="2027-01-09T15:30:00-03:00">
-      <div class="countdown-intro"><p class="section-label">Cada dia mais perto</p><h2 id="countdown-heading">Até o nosso sim.</h2><p class="countdown-date">9 de janeiro de 2027, às 15h30 · Aracati/CE</p></div>
-      <div class="countdown-clock" role="timer" aria-label="Tempo restante para o casamento" aria-live="off" hidden>
-        <div><span data-countdown="days">00</span><small>Dias</small></div>
-        <div><span data-countdown="hours">00</span><small>Horas</small></div>
-        <div><span data-countdown="minutes">00</span><small>Minutos</small></div>
-        <div><span data-countdown="seconds">00</span><small>Segundos</small></div>
-      </div>
-      <p class="countdown-complete" role="status" hidden>Chegou o momento do nosso sim!</p>
+    <section class="rsvp" id="rsvp">
+      <div class="rsvp-intro reveal"><p class="section-label">R.S.V.P.</p><h2>Esperamos<br> por <i>você.</i></h2><p>Confirme sua presença aqui no site. Sua resposta ficará registrada para os noivos.</p></div>
+      <form class="rsvp-form reveal" novalidate><label>Nome completo<input type="text" name="nome" autocomplete="name" minlength="2" maxlength="120" placeholder="Como está no convite" required></label><fieldset><legend>Você poderá estar presente?</legend><label class="radio"><input type="radio" name="presenca" value="sim" required><span>Sim, com alegria</span></label><label class="radio"><input type="radio" name="presenca" value="nao"><span>Infelizmente, não</span></label></fieldset><label>Mensagem para os noivos<textarea name="mensagem" rows="3" maxlength="300" placeholder="Escreva algumas palavras..."></textarea></label><div class="rsvp-turnstile" aria-label="Verificação de segurança"></div><button type="submit" class="submit-button"><span>Confirmar presença</span><i aria-hidden="true">→</i></button><p class="form-status" role="status" aria-live="polite"></p></form>
     </section>
     <section class="welcome paper-section" id="historia">
       <p class="section-label reveal">Um novo capítulo</p>
@@ -72,15 +66,21 @@
       </div>
     </section>
     <section class="gifts paper-section" id="presentes"><div class="gift-ornament reveal"><span class="monogram-art" role="img" aria-label="Monograma de Levy e Laís"></span></div><div class="gift-copy reveal"><p class="section-label">Lista de presentes</p><h2>Sua presença é<br> o nosso melhor presente.</h2><p>Se desejar nos presentear, preparamos uma lista com carinho. Você poderá escolher Pix pelo Mercado Pago ou crédito e débito pela Lejour.</p><a class="text-link" href="presentes.html">Ver lista de presentes <span aria-hidden="true">↗</span></a></div></section>
-    <section class="rsvp" id="rsvp">
-      <div class="rsvp-intro reveal"><p class="section-label">R.S.V.P.</p><h2>Esperamos<br> por <i>você.</i></h2><p>A confirmação oficial será aberta assim que os convites forem enviados. Você já pode testar a experiência abaixo.</p></div>
-      <form class="rsvp-form reveal" novalidate><label>Nome completo<input type="text" name="nome" autocomplete="name" placeholder="Como está no convite" required></label><fieldset><legend>Você poderá estar presente?</legend><label class="radio"><input type="radio" name="presenca" value="sim" required><span>Sim, com alegria</span></label><label class="radio"><input type="radio" name="presenca" value="nao"><span>Infelizmente, não</span></label></fieldset><label>Mensagem para os noivos<textarea name="mensagem" rows="3" placeholder="Escreva algumas palavras..."></textarea></label><button type="submit" class="submit-button"><span>Enviar confirmação</span><i>→</i></button><p class="form-status" role="status"></p></form>
+    <section class="countdown" aria-labelledby="countdown-heading" data-wedding-date="2027-01-09T15:30:00-03:00">
+      <div class="countdown-intro"><p class="section-label">Cada dia mais perto</p><h2 id="countdown-heading">Até o nosso sim.</h2><p class="countdown-date">9 de janeiro de 2027, às 15h30 · Aracati/CE</p></div>
+      <div class="countdown-clock" role="timer" aria-label="Tempo restante para o casamento" aria-live="off" hidden>
+        <div><span data-countdown="days">00</span><small>Dias</small></div>
+        <div><span data-countdown="hours">00</span><small>Horas</small></div>
+        <div><span data-countdown="minutes">00</span><small>Minutos</small></div>
+        <div><span data-countdown="seconds">00</span><small>Segundos</small></div>
+      </div>
+      <p class="countdown-complete" role="status" hidden>Chegou o momento do nosso sim!</p>
     </section>
-    <section class="faq paper-section"><div class="faq-title reveal"><p class="section-label">Antes de perguntar</p><h2>Dúvidas<br> <i>frequentes.</i></h2></div><div class="faq-list"><details class="reveal"><summary>Posso levar acompanhante?<span>+</span></summary><p>Os acompanhantes indicados estarão informados no convite individual.</p></details><details class="reveal"><summary>Crianças são bem-vindas?<span>+</span></summary><p>Essa informação será confirmada junto aos convites.</p></details><details class="reveal"><summary>Haverá estacionamento?<span>+</span></summary><p>As orientações de acesso e estacionamento serão publicadas nesta página.</p></details><details class="reveal"><summary>Até quando devo confirmar?<span>+</span></summary><p>A data limite aparecerá aqui quando o RSVP oficial for aberto.</p></details></div></section>
+    <section class="faq paper-section"><div class="faq-title reveal"><p class="section-label">Antes de perguntar</p><h2>Dúvidas<br> <i>frequentes.</i></h2></div><div class="faq-list"><details class="reveal"><summary>Posso levar acompanhante?<span>+</span></summary><p>Os acompanhantes indicados estarão informados no convite individual.</p></details><details class="reveal"><summary>Crianças são bem-vindas?<span>+</span></summary><p>Essa informação será confirmada junto aos convites.</p></details><details class="reveal"><summary>Haverá estacionamento?<span>+</span></summary><p>As orientações de acesso e estacionamento serão publicadas nesta página.</p></details><details class="reveal"><summary>Até quando devo confirmar?<span>+</span></summary><p>Ainda não definimos uma data limite. Você já pode enviar sua resposta pelo formulário acima.</p></details></div></section>
     <section class="closing"><p class="eyebrow reveal">Nos vemos em breve</p><h2 class="reveal">Levy <i>&</i> Laís</h2><p class="closing-note">O melhor de tudo é ter vocês por perto.</p></section>
   </main>
   <a class="floating-gifts-cta" href="presentes.html" aria-label="Abrir lista de presentes"><img src="assets/basket-3d.png" alt="" aria-hidden="true" width="64" height="64"><span>Lista de presentes</span></a>
-  <footer><span>Feito com amor</span><a href="#inicio">Voltar ao início ↑</a><span>Levy & Laís</span></footer><script src="script.js?v=20260923-mobile-layout"></script>
+  <footer><span>Feito com amor</span><a href="#inicio">Voltar ao início ↑</a><span>Levy & Laís</span></footer><script type="module" src="script.js?v=20260924-rsvp"></script>
 </body>
 </html>
 

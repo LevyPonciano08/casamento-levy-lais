@@ -10,4 +10,4 @@ O site é publicado pelo GitHub Pages a cada atualização enviada para a branch
 
 Abra `index.html` no navegador ou execute um servidor local na pasta do projeto.
 
-O formulário de RSVP é demonstrativo e salva dados apenas no navegador. Para receber confirmações reais, será necessário conectá-lo a um serviço de formulários ou banco de dados.
+O formulário de RSVP envia as respostas à Edge Function `submit-rsvp` no Supabase. As respostas ficam disponíveis apenas para administradores autenticados no painel.

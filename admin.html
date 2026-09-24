@@ -5,20 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#E8EDF0">
   <meta name="robots" content="noindex,nofollow">
-  <title>Painel da lista — Levy & Laís</title>
+  <title>Painel do casal — Levy & Laís</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Italiana&family=Newsreader:opsz,wght@6..72,400&display=swap" rel="stylesheet">
   <link rel="icon" href="assets/LL.png" type="image/png">
-  <link rel="stylesheet" href="admin.css?v=20260923-mobile-layout">
+  <link rel="stylesheet" href="admin.css?v=20260924-rsvp">
 </head>
 <body>
   <main>
     <section class="login-panel" aria-labelledby="login-title">
       <span class="admin-monogram" aria-hidden="true"></span>
       <p class="eyebrow">Área do casal</p>
-      <h1 id="login-title">Lista de presentes</h1>
-      <p class="login-intro">Entre com o e-mail de administrador para cuidar do catálogo e acompanhar os pagamentos.</p>
+      <h1 id="login-title">Painel do casal</h1>
+      <p class="login-intro">Entre com o e-mail de administrador para acompanhar presenças, presentes e pagamentos.</p>
       <form class="login-form" id="admin-login-form">
         <label>E-mail<input name="email" type="email" autocomplete="username" required></label>
         <label>Senha<input name="password" type="password" autocomplete="current-password" minlength="8" required></label>
@@ -42,10 +42,11 @@
 
       <div class="admin-layout">
         <aside class="admin-sidebar">
-          <div><p class="eyebrow">Administração</p><h1>Lista de<br>presentes</h1></div>
+          <div><p class="eyebrow">Administração</p><h1>Painel do casal</h1></div>
           <nav aria-label="Seções do painel">
             <button class="nav-button active" type="button" data-view="catalog">Presentes <span>01</span></button>
             <button class="nav-button" type="button" data-view="orders">Pagamentos <span>02</span></button>
+            <button class="nav-button" type="button" data-view="rsvp">Presenças <span>03</span></button>
           </nav>
           <a href="presentes.html" target="_blank" rel="noopener">Ver lista pública ↗</a>
         </aside>
@@ -80,6 +81,20 @@
               <p class="orders-empty">Nenhum pagamento registrado.</p>
             </div>
           </section>
+
+          <section class="dashboard-view" data-view-panel="rsvp" hidden>
+            <header class="view-heading"><div><p class="eyebrow">R.S.V.P.</p><h2>Confirmações de presença</h2></div><button class="refresh-rsvp-button new-gift-button" type="button">Atualizar respostas <span>↻</span></button></header>
+            <div class="rsvp-stats stats-grid">
+              <article><span>Responderam</span><strong data-rsvp-stat="total">0</strong></article>
+              <article><span>Vão comparecer</span><strong data-rsvp-stat="yes">0</strong></article>
+              <article><span>Não vão</span><strong data-rsvp-stat="no">0</strong></article>
+            </div>
+            <p class="rsvp-panel-status panel-status" role="status"></p>
+            <div class="orders-table-wrap rsvp-table-wrap">
+              <table><thead><tr><th>Convidado</th><th>Resposta</th><th>Mensagem</th><th>Data</th></tr></thead><tbody class="rsvp-body"></tbody></table>
+              <p class="rsvp-empty orders-empty">Nenhuma resposta registrada ainda.</p>
+            </div>
+          </section>
         </div>
       </div>
     </section>
@@ -109,6 +124,6 @@
     </form>
   </dialog>
 
-  <script type="module" src="admin.js?v=20260923-min-amount"></script>
+  <script type="module" src="admin.js?v=20260924-rsvp"></script>
 </body>
 </html>

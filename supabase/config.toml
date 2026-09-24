@@ -36,3 +36,6 @@ verify_jwt = false
 
 [functions.mercado-pago-webhook]
 verify_jwt = false
+
+[functions.submit-rsvp]
+verify_jwt = false

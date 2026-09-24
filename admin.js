@@ -15,6 +15,7 @@ let supabase;
 let sessionUser;
 let gifts = [];
 let orders = [];
+let rsvps = [];
 
 const formatMoney = (cents) => money.format(Number(cents || 0) / 100);
 const parseMoney = (value) => {
@@ -38,6 +39,7 @@ function showShell(email = 'Prévia local') {
 function renderAll() {
   renderGifts();
   renderOrders();
+  renderRsvps();
   document.querySelector('[data-stat="active"]').textContent = String(gifts.filter((gift) => gift.is_active !== false).length);
   const approved = orders.filter((order) => order.status === 'approved');
   document.querySelector('[data-stat="approved"]').textContent = String(approved.length);
@@ -159,6 +161,28 @@ async function toggleGift(gift) {
   else await loadDashboard();
 }
 
+function renderRsvps() {
+  document.querySelector('[data-rsvp-stat="total"]').textContent = String(rsvps.length);
+  document.querySelector('[data-rsvp-stat="yes"]').textContent = String(rsvps.filter((item) => item.attending).length);
+  document.querySelector('[data-rsvp-stat="no"]').textContent = String(rsvps.filter((item) => !item.attending).length);
+  document.querySelector('.rsvp-empty').hidden = rsvps.length > 0;
+  document.querySelector('.rsvp-body').replaceChildren(...rsvps.map((response) => {
+    const row = document.createElement('tr');
+    const values = [
+      response.guest_name,
+      response.attending ? 'Sim' : 'Não',
+      response.guest_message || '—',
+      new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(response.created_at))
+    ];
+    values.forEach((value) => {
+      const cell = document.createElement('td');
+      cell.textContent = value;
+      row.append(cell);
+    });
+    return row;
+  }));
+}
+
 async function deleteGift(gift, button) {
   if (!configured) {
     panelStatus.textContent = 'Conecte o Supabase para excluir presentes.';
@@ -273,16 +297,35 @@ document.querySelectorAll('.nav-button').forEach((button) => button.addEventList
   document.querySelectorAll('.nav-button').forEach((item) => item.classList.toggle('active', item === button));
   document.querySelectorAll('[data-view-panel]').forEach((panel) => { panel.hidden = panel.dataset.viewPanel !== button.dataset.view; });
 }));
+document.querySelector('.refresh-rsvp-button').addEventListener('click', async () => {
+  const status = document.querySelector('.rsvp-panel-status');
+  status.textContent = 'Atualizando respostas...';
+  try {
+    const { data, error } = await supabase.from('rsvp_responses')
+      .select('id, guest_name, attending, guest_message, created_at')
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    rsvps = data || [];
+    renderRsvps();
+    status.textContent = 'Respostas atualizadas.';
+  } catch (error) {
+    console.error(error);
+    status.textContent = 'Não foi possível atualizar as respostas.';
+  }
+});
 
 async function loadDashboard() {
-  const [giftResult, orderResult] = await Promise.all([
+  const [giftResult, orderResult, rsvpResult] = await Promise.all([
     supabase.from('gifts').select('*').is('archived_at', null).order('sort_order').order('created_at'),
-    supabase.from('gift_orders').select('*, gifts(title)').order('created_at', { ascending: false })
+    supabase.from('gift_orders').select('*, gifts(title)').order('created_at', { ascending: false }),
+    supabase.from('rsvp_responses').select('id, guest_name, attending, guest_message, created_at').order('created_at', { ascending: false })
   ]);
   if (giftResult.error) throw giftResult.error;
   if (orderResult.error) throw orderResult.error;
+  if (rsvpResult.error) throw rsvpResult.error;
   gifts = giftResult.data || [];
   orders = orderResult.data || [];
+  rsvps = rsvpResult.data || [];
   renderAll();
 }
 

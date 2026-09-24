@@ -16,3 +16,6 @@
   .login-panel>p:not(.eyebrow){margin:15px 0 24px}
   .login-form button{margin-top:20px}
 }
+.rsvp-table-wrap table{min-width:620px}
+.rsvp-table-wrap td:nth-child(3){max-width:360px;white-space:pre-wrap;overflow-wrap:anywhere}
+@media(max-width:600px){.admin-sidebar nav{grid-template-columns:repeat(3,minmax(0,1fr))}.nav-button{padding:12px 8px;font-size:12px}.nav-button span{display:none}}

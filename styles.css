@@ -151,3 +151,11 @@ body{padding-top:94px}
   .menu-toggle{width:44px;align-items:center}
   .nav-rsvp{display:inline-flex;align-items:center;min-height:44px}
 }
+
+/* The RSVP is the first section after the opening and keeps the site's existing palette. */
+.rsvp{margin:45px 8% 0;padding:55px 5%;gap:8%}
+.rsvp-turnstile{margin:0 0 22px;min-height:68px}
+.submit-button:disabled{opacity:.65;cursor:wait}
+.floating-gifts-cta.is-hidden{display:none}
+@media(max-width:900px){.rsvp{grid-template-columns:1fr;padding:50px 5%;gap:28px}}
+@media(max-width:600px){.rsvp{margin:28px 7% 0;padding:38px 6%;gap:24px}}

@@ -1,4 +1,6 @@
 ﻿const menuButton = document.querySelector('.menu-toggle');
+import { registryConfig } from './registry-config.js?v=20260922-turnstile';
+
 const menu = document.querySelector('#main-nav');
 function closeMenu() {
   menu.classList.remove('open');
@@ -26,22 +28,91 @@ document.querySelectorAll('details').forEach(item => item.addEventListener('togg
 }));
 const form = document.querySelector('.rsvp-form');
 const status = document.querySelector('.form-status');
-form.addEventListener('submit', event => {
+const rsvpButton = form.querySelector('.submit-button');
+let rsvpTurnstileToken = '';
+let rsvpTurnstileWidget = null;
+let rsvpSubmissionKey = crypto.randomUUID();
+
+form.addEventListener('submit', async event => {
   event.preventDefault();
+  status.textContent = '';
   if (!form.checkValidity()) {
     status.textContent = 'Preencha seu nome e escolha uma opção de presença.';
     form.reportValidity();
     return;
   }
+  if (!rsvpTurnstileToken) {
+    status.textContent = 'Conclua a verificação de segurança para confirmar.';
+    return;
+  }
   const data = Object.fromEntries(new FormData(form));
+  if (data.nome.trim().length < 2) {
+    status.textContent = 'Informe seu nome completo para confirmar.';
+    form.elements.nome.focus();
+    return;
+  }
+  rsvpButton.disabled = true;
+  status.textContent = 'Registrando sua resposta...';
   try {
-    localStorage.setItem('rsvp-levy-lais', JSON.stringify(data));
-    status.textContent = `Obrigada, ${data.nome}. Esta é uma confirmação de demonstração, salva apenas neste navegador.`;
+    const response = await fetch(`${registryConfig.supabaseUrl}/functions/v1/submit-rsvp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', apikey: registryConfig.supabasePublishableKey },
+      body: JSON.stringify({
+        submissionKey: rsvpSubmissionKey,
+        name: data.nome.trim(),
+        attending: data.presenca === 'sim',
+        message: data.mensagem.trim(),
+        turnstileToken: rsvpTurnstileToken
+      })
+    });
+    const result = await response.json();
+    if (!response.ok || !result.recorded) throw new Error(result.error || 'submission_failed');
+    status.textContent = `Resposta registrada. Obrigado, ${data.nome.trim()}!`;
     form.reset();
-  } catch {
-    status.textContent = 'Não foi possível salvar a demonstração neste navegador. Tente novamente com o armazenamento local habilitado.';
+    rsvpSubmissionKey = crypto.randomUUID();
+  } catch (error) {
+    console.error('RSVP submission failed', error);
+    status.textContent = error.message?.startsWith('human_verification')
+      ? 'A verificação expirou. Conclua novamente e tente enviar.'
+      : 'Não foi possível confirmar agora. Tente novamente em instantes.';
+  } finally {
+    rsvpButton.disabled = false;
+    rsvpTurnstileToken = '';
+    if (rsvpTurnstileWidget !== null && window.turnstile) window.turnstile.reset(rsvpTurnstileWidget);
   }
 });
+
+function loadRsvpTurnstile() {
+  if (!registryConfig.turnstileSiteKey) {
+    status.textContent = 'A confirmação está temporariamente indisponível.';
+    return;
+  }
+  window.onRsvpTurnstileLoad = () => {
+    rsvpTurnstileWidget = window.turnstile.render('.rsvp-turnstile', {
+      sitekey: registryConfig.turnstileSiteKey,
+      language: 'pt-br',
+      theme: 'light',
+      size: window.innerWidth <= 390 ? 'compact' : 'flexible',
+      callback: token => { rsvpTurnstileToken = token; },
+      'expired-callback': () => { rsvpTurnstileToken = ''; },
+      'error-callback': () => { rsvpTurnstileToken = ''; }
+    });
+  };
+  const script = document.createElement('script');
+  script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=onRsvpTurnstileLoad';
+  script.async = true;
+  script.defer = true;
+  script.onerror = () => { status.textContent = 'Não foi possível carregar a verificação. Atualize a página para tentar novamente.'; };
+  document.head.append(script);
+}
+loadRsvpTurnstile();
+
+const floatingGiftsLink = document.querySelector('.floating-gifts-cta');
+if (floatingGiftsLink && 'IntersectionObserver' in window) {
+  new IntersectionObserver(([entry]) => {
+    floatingGiftsLink.classList.toggle('is-hidden', entry.isIntersecting);
+  }, { threshold: 0 }).observe(document.querySelector('#rsvp'));
+}
 
 const header = document.querySelector('.site-header');
 let headerFrame = 0;
