@@ -1,0 +1,57 @@
+/* Shared motion for the wedding site's text links and underline buttons. */
+.underline-link {
+  position: relative;
+}
+
+.detail-map-link.underline-link {
+  border-bottom: 1px solid currentColor;
+}
+
+.underline-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: currentColor;
+  pointer-events: none;
+  transform: scaleX(0);
+  transform-origin: right center;
+  transition: transform 320ms cubic-bezier(.22, 1, .36, 1);
+}
+
+.underline-link.underline-link,
+.underline-link.underline-link:is(:hover, :focus-visible) {
+  text-decoration: none;
+}
+
+.underline-link:not(:disabled):is(:hover, :focus-visible)::after {
+  transform: scaleX(1);
+  transform-origin: left center;
+}
+
+.underline-link > span {
+  display: inline-block;
+  transition: transform 320ms cubic-bezier(.22, 1, .36, 1);
+}
+
+.underline-link:not(:disabled):is(:hover, :focus-visible) > span {
+  transform: translate(2px, -2px);
+}
+
+.hero-link.underline-link:is(:hover, :focus-visible) > span,
+.hero-bottom .underline-link:is(:hover, :focus-visible) > span {
+  transform: translateY(3px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .underline-link::after,
+  .underline-link > span {
+    transition: none !important;
+  }
+
+  .underline-link.underline-link:is(:hover, :focus-visible) > span {
+    transform: none;
+  }
+}
