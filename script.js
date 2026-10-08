@@ -61,13 +61,14 @@ form.addEventListener('submit', async event => {
         submissionKey: rsvpSubmissionKey,
         name: data.nome.trim(),
         attending: data.presenca === 'sim',
-        message: data.mensagem.trim(),
         turnstileToken: rsvpTurnstileToken
       })
     });
     const result = await response.json();
     if (!response.ok || !result.recorded) throw new Error(result.error || 'submission_failed');
-    status.textContent = `Resposta registrada. Obrigado, ${data.nome.trim()}!`;
+    status.textContent = data.presenca === 'sim'
+      ? `Presença confirmada, ${data.nome.trim()}! Esperamos você.`
+      : `Resposta registrada, ${data.nome.trim()}. Obrigado por avisar!`;
     form.reset();
     rsvpSubmissionKey = crypto.randomUUID();
   } catch (error) {

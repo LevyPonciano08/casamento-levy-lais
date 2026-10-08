@@ -6,7 +6,7 @@
   <title>Levy & Laís — Nosso casamento</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Italiana&family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400&display=swap" rel="stylesheet">
-  <link rel="icon" href="assets/LL.png" type="image/png"><link rel="stylesheet" href="styles.css?v=20260924-footer">
+  <link rel="icon" href="assets/LL.png" type="image/png"><link rel="stylesheet" href="styles.css?v=20261008-simple-rsvp">
   <link rel="stylesheet" href="link-motion.css?v=20261008">
 </head>
 <body>
@@ -23,8 +23,21 @@
       <div class="hero-bottom"><span>Levy & Laís · Nosso novo capítulo</span><a class="underline-link" href="#historia">Continue a história <span>↓</span></a></div>
     </section>
     <section class="rsvp" id="rsvp">
-      <div class="rsvp-intro reveal"><p class="section-label">R.S.V.P.</p><h2>Esperamos<br> por <i>você.</i></h2><p>Confirme sua presença aqui no site. Sua resposta ficará registrada para os noivos.</p></div>
-      <form class="rsvp-form reveal" novalidate><label>Nome completo<input type="text" name="nome" autocomplete="name" minlength="2" maxlength="120" placeholder="Como está no convite" required></label><fieldset><legend>Você poderá estar presente?</legend><label class="radio"><input type="radio" name="presenca" value="sim" required><span>Sim, com alegria</span></label><label class="radio"><input type="radio" name="presenca" value="nao"><span>Infelizmente, não</span></label></fieldset><label>Mensagem para os noivos<textarea name="mensagem" rows="3" maxlength="300" placeholder="Escreva algumas palavras..."></textarea></label><div class="rsvp-turnstile" aria-label="Verificação de segurança"></div><button type="submit" class="submit-button"><span>Confirmar presença</span><i aria-hidden="true">→</i></button><p class="form-status" role="status" aria-live="polite"></p></form>
+      <div class="rsvp-intro reveal"><p class="section-label">Confirmação de presença</p><h2>Você vem<br> celebrar com <i>a gente?</i></h2><p>Conte se você vai ao nosso casamento. É só informar seu nome e escolher uma opção.</p></div>
+      <form class="rsvp-form reveal" novalidate>
+        <label for="rsvp-name">Seu nome completo</label>
+        <input id="rsvp-name" type="text" name="nome" autocomplete="name" minlength="2" maxlength="120" placeholder="Nome como está no convite" required>
+        <fieldset>
+          <legend>Você vai ao casamento?</legend>
+          <div class="rsvp-options">
+            <label class="rsvp-option"><input type="radio" name="presenca" value="sim" required><span>Vou</span></label>
+            <label class="rsvp-option"><input type="radio" name="presenca" value="nao"><span>Não vou</span></label>
+          </div>
+        </fieldset>
+        <div class="rsvp-turnstile" aria-label="Verificação de segurança"></div>
+        <button type="submit" class="submit-button"><span>Enviar resposta</span><i aria-hidden="true">→</i></button>
+        <p class="form-status" role="status" aria-live="polite"></p>
+      </form>
     </section>
     <section class="welcome paper-section" id="historia">
       <p class="section-label reveal">Um novo capítulo</p>
@@ -95,10 +108,9 @@
       </nav>
     </div>
     <div class="footer-bottom"><span><time datetime="2027-01-09T15:30:00-03:00">9 de janeiro de 2027, às 15h30</time> · Porto Cabeção, Aracati/CE</span><a class="underline-link" href="#inicio">Voltar ao topo <span aria-hidden="true">↑</span></a></div>
-  </footer><script type="module" src="script.js?v=20260924-footer"></script>
+  </footer><script type="module" src="script.js?v=20261008-simple-rsvp"></script>
 </body>
 </html>
-
 
 
 

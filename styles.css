@@ -175,3 +175,25 @@ body{padding-top:94px}
 .footer-bottom a span{margin-left:8px}
 @media(max-width:900px){.footer-main{align-items:flex-start;flex-direction:column;gap:25px}.footer-nav{justify-content:flex-start}}
 @media(max-width:600px){.site-footer{padding:0 7%}.footer-main{padding:34px 0 24px;gap:28px}.footer-nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px 14px;width:100%}.footer-nav a{font-size:13px}.footer-bottom{align-items:flex-start;flex-direction:column;gap:4px;padding:16px 0 22px;line-height:1.55}}
+
+/* A short RSVP with two clear, equally accessible choices. */
+.rsvp{align-items:center;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.rsvp-intro h2{font-size:clamp(36px,3.8vw,56px)}
+.rsvp-intro>p:last-child{max-width:370px;margin-top:20px}
+.rsvp-form{min-width:0;padding:30px;background:var(--white);border:1px solid var(--line)}
+.rsvp-form>label{font-size:14px;font-weight:500;margin-bottom:8px}
+.rsvp-form input[type=text]{margin:0 0 24px;padding:12px 14px;min-height:48px;border:1px solid var(--line);background:var(--paper)}
+.rsvp-form fieldset{min-width:0;margin-bottom:22px}
+.rsvp-form legend{font-size:14px;font-weight:500;margin-bottom:10px}
+.rsvp-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.rsvp-option{display:flex;align-items:center;gap:10px;min-height:56px;padding:13px 16px;border:1px solid var(--line);background:var(--white);cursor:pointer;font-size:16px;transition:background .2s,border-color .2s}
+.rsvp-option input{margin:0;flex:0 0 auto;width:18px;height:18px;accent-color:var(--ink)}
+.rsvp-option:hover{border-color:var(--muted);background:var(--paper)}
+.rsvp-option:has(input:checked){border-color:var(--ink);background:var(--mist)}
+.rsvp-option:has(input:focus-visible){outline:2px solid var(--ink);outline-offset:3px}
+.rsvp-form .submit-button{min-height:50px;font-size:14px;font-weight:500}
+.rsvp-form .form-status{font-size:14px;line-height:1.6}
+.rsvp-form .form-status:empty{margin:0}
+.rsvp-turnstile{max-width:100%;overflow:hidden}
+@media(max-width:900px){.rsvp{grid-template-columns:1fr}.rsvp-intro h2 br{display:none}.rsvp-form{width:100%;max-width:560px}.rsvp-intro>p:last-child{max-width:560px}}
+@media(max-width:600px){.rsvp-form{padding:22px 18px}.rsvp-option{padding:12px;gap:8px}.rsvp-options{gap:10px}}
