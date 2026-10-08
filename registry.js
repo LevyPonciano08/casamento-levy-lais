@@ -4,6 +4,7 @@ const grid = document.querySelector('.gift-grid');
 const catalogStatus = document.querySelector('.catalog-status');
 const filters = document.querySelector('.category-filters');
 const paymentChoice = document.querySelector('.payment-choice-dialog');
+const lejourDialog = document.querySelector('.lejour-dialog');
 const dialog = document.querySelector('.gift-dialog');
 const form = document.querySelector('.gift-form');
 const formStatus = document.querySelector('.form-status');
@@ -121,6 +122,15 @@ paymentChoice.querySelector('.pix-option').addEventListener('click', () => {
   paymentChoice.close();
   openGift(selectedGift);
 });
+paymentChoice.querySelector('.card-option').addEventListener('click', () => {
+  paymentChoice.close();
+  lejourDialog.showModal();
+});
+lejourDialog.querySelector('.dialog-close').addEventListener('click', () => lejourDialog.close());
+lejourDialog.addEventListener('click', (event) => {
+  if (event.target === lejourDialog) lejourDialog.close();
+});
+lejourDialog.querySelector('.lejour-continue').addEventListener('click', () => lejourDialog.close());
 
 function openGift(gift) {
   form.reset();

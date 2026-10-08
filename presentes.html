@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Italiana&family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400&display=swap" rel="stylesheet">
   <link rel="icon" href="assets/LL.png" type="image/png">
-  <link rel="stylesheet" href="registry.css?v=20260923-mobile-layout">
+  <link rel="stylesheet" href="registry.css?v=20261008-lejour-dialog">
   <link rel="stylesheet" href="link-motion.css?v=20261008">
 </head>
 <body>
@@ -69,13 +69,20 @@
         <strong>Pix</strong>
         <span>Continuar pelo Mercado Pago</span>
       </button>
-      <a class="payment-choice-option card-option" href="https://site.lejour.com.br/lista-de-presentes/levy-e-lais">
+      <button class="payment-choice-option card-option" type="button">
         <strong>Crédito / Débito</strong>
         <span>Ir para a lista na Lejour</span>
-        <small>Na página que abrir, escolha o presente novamente.</small>
-      </a>
+      </button>
     </div>
     <p class="payment-choice-note">As compras feitas na Lejour são registradas separadamente desta lista.</p>
+  </dialog>
+
+  <dialog class="payment-choice-dialog lejour-dialog" aria-labelledby="lejour-title" aria-describedby="lejour-message">
+    <button class="dialog-close" type="button" aria-label="Fechar">×</button>
+    <p class="eyebrow">Crédito / Débito</p>
+    <h2 id="lejour-title">Continuar na Lejour</h2>
+    <p id="lejour-message" class="lejour-message">Você será direcionado para outra aba, selecione novamente o produto que você deseja nos presentear.</p>
+    <a class="primary-link lejour-continue" href="https://site.lejour.com.br/lista-de-presentes/levy-e-lais" target="_blank" rel="noopener noreferrer">Continuar <span aria-hidden="true">↗</span></a>
   </dialog>
 
   <dialog class="gift-dialog" aria-labelledby="dialog-title">
@@ -117,6 +124,6 @@
   </dialog>
 
   <footer><span>9 de janeiro de 2027</span><span>Levy & Laís</span><a class="underline-link" href="index.html">Voltar ao site</a></footer>
-  <script type="module" src="registry.js?v=20261008-link-motion"></script>
+  <script type="module" src="registry.js?v=20261008-lejour-dialog"></script>
 </body>
 </html>
