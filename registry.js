@@ -69,6 +69,11 @@ function createGiftCard(gift, index) {
   const button = element('button', 'gift-button underline-link', available ? 'Presentear →' : 'Já presenteado');
   button.type = 'button';
   button.disabled = !available;
+  button.setAttribute('aria-label', available ? `Presentear: ${gift.title}` : `${gift.title}: já presenteado`);
+  if (available) {
+    card.classList.add('gift-card-available');
+    button.setAttribute('aria-haspopup', 'dialog');
+  }
   if (available) button.addEventListener('click', () => openPaymentChoice(gift));
   row.append(button);
   body.append(row);
