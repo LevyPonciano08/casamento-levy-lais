@@ -1,4 +1,7 @@
 output/
+node_modules/
+.vercel/
+public/
 .playwright-cli/
 printsavaliacao/
 MEMORIA-SITE-CASAMENTO.md
@@ -8,3 +11,5 @@ MEMORIA-SITE-CASAMENTO.md
 supabase/.temp/
 supabase/.branches/
 supabase/functions/.env
+.vercel
+.env*

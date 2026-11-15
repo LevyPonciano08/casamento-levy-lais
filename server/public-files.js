@@ -1,0 +1,1 @@
+export const publicFiles = ['index.html','presentes.html','admin.html','pagamento.html','pagamento.js','styles.css','link-motion.css','registry.css','admin.css','script.js','registry.js','registry-config.js','admin.js','api-client.js','robots.txt'];

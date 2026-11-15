@@ -1,18 +1,16 @@
-import { registryConfig, demoGifts } from './registry-config.js?v=20260922-live';
+import { api } from './api-client.js';
+import { registryConfig, demoGifts } from './registry-config.js?v=20261029-postgres';
 
-const configured = !registryConfig.demoMode && registryConfig.supabaseUrl && registryConfig.supabasePublishableKey;
+const configured = !registryConfig.demoMode && Boolean(registryConfig.apiBaseUrl);
 const loginPanel = document.querySelector('.login-panel');
 const loginForm = document.querySelector('#admin-login-form');
 const loginStatus = document.querySelector('.login-status');
-const passwordSetupForm = document.querySelector('.password-setup-form');
-const passwordStatus = document.querySelector('.password-status');
 const shell = document.querySelector('.admin-shell');
 const editor = document.querySelector('.gift-editor');
 const giftForm = document.querySelector('.gift-editor-form');
 const panelStatus = document.querySelector('.panel-status');
 const money = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
-let supabase;
-let sessionUser;
+
 let gifts = [];
 let orders = [];
 let rsvps = [];
@@ -22,10 +20,17 @@ const parseMoney = (value) => {
   const number = Number(String(value).trim().replace(/\./g, '').replace(',', '.'));
   return Number.isFinite(number) ? Math.round(number * 100) : 0;
 };
-const inputMoney = (cents) => (Number(cents || 0) / 100).toFixed(2).replace('.', ',');
+const inputMoney = (cents) => (Number(cents || 0) / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+for (const field of [giftForm.elements.price, giftForm.elements.minimum]) {
+  field.addEventListener('input', () => {
+    const digits = field.value.replace(/\D/g, '').replace(/^0+(?=\d)/, '');
+    field.value = digits ? inputMoney(Number(digits.slice(0, 9))) : '';
+  });
+}
 
 function storageImage(path) {
-  return path && registryConfig.supabaseUrl ? `${registryConfig.supabaseUrl}/storage/v1/object/public/gift-images/${path}` : '';
+  return path ? `${registryConfig.apiBaseUrl}/images/${path}` : '';
 }
 
 function showShell(email = 'Prévia local') {
@@ -136,7 +141,14 @@ function openEditor(gift = null) {
   giftForm.elements.id.value = gift?.id || '';
   giftForm.elements.imagePath.value = gift?.image_path || '';
   giftForm.elements.title.value = gift?.title || '';
-  giftForm.elements.category.value = gift?.category || '';
+  const category = giftForm.elements.category;
+  category.querySelector('[data-legacy-category]')?.remove();
+  if (gift?.category && !Array.from(category.options).some(option => option.value === gift.category)) {
+    const option = new Option(gift.category, gift.category);
+    option.dataset.legacyCategory = 'true';
+    category.add(option);
+  }
+  category.value = gift?.category || '';
   giftForm.elements.giftMode.value = gift?.gift_mode || 'unit';
   giftForm.elements.price.value = gift ? inputMoney(gift.price_cents) : '';
   giftForm.elements.minimum.value = gift?.minimum_contribution_cents ? inputMoney(gift.minimum_contribution_cents) : '';
@@ -153,17 +165,18 @@ function openEditor(gift = null) {
 
 async function toggleGift(gift) {
   if (!configured) {
-    panelStatus.textContent = 'Conecte o Supabase para alterar os presentes.';
+    panelStatus.textContent = 'Conecte a API para alterar os presentes.';
     return;
   }
-  const { error } = await supabase.from('gifts').update({ is_active: gift.is_active === false }).eq('id', gift.id);
-  if (error) panelStatus.textContent = 'Não foi possível alterar este presente.';
-  else await loadDashboard();
+  try {
+    await api('/admin/gifts/' + gift.id, { method: 'PATCH', body: { is_active: gift.is_active === false } });
+    await loadDashboard();
+  } catch { panelStatus.textContent = 'Não foi possível alterar este presente.'; }
 }
 
 function renderRsvps() {
   document.querySelector('[data-rsvp-stat="total"]').textContent = String(rsvps.length);
-  document.querySelector('[data-rsvp-stat="yes"]').textContent = String(rsvps.filter((item) => item.attending).length);
+  document.querySelector('[data-rsvp-stat="yes"]').textContent = String(rsvps.filter(item => item.attending).reduce((total, item) => total + 1 + (item.companions?.length || 0), 0));
   document.querySelector('[data-rsvp-stat="no"]').textContent = String(rsvps.filter((item) => !item.attending).length);
   document.querySelector('.rsvp-empty').hidden = rsvps.length > 0;
   document.querySelector('.rsvp-body').replaceChildren(...rsvps.map((response) => {
@@ -171,6 +184,7 @@ function renderRsvps() {
     const values = [
       response.guest_name,
       response.attending ? 'Sim' : 'Não',
+      response.companions?.join(', ') || '—',
       response.guest_message || '—',
       new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(response.created_at))
     ];
@@ -185,7 +199,7 @@ function renderRsvps() {
 
 async function deleteGift(gift, button) {
   if (!configured) {
-    panelStatus.textContent = 'Conecte o Supabase para excluir presentes.';
+    panelStatus.textContent = 'Conecte a API para excluir presentes.';
     return;
   }
   if (!window.confirm(`Excluir "${gift.title}" da lista? Se houver pedidos vinculados, o presente será arquivado para preservar o histórico de pagamentos.`)) return;
@@ -193,16 +207,7 @@ async function deleteGift(gift, button) {
   button.disabled = true;
   panelStatus.textContent = 'Excluindo presente...';
   try {
-    const { data, error } = await supabase.from('gifts').delete().eq('id', gift.id).select('id');
-    if (error?.code === '23503') {
-      const { data: archived, error: archiveError } = await supabase.from('gifts')
-        .update({ is_active: false, archived_at: new Date().toISOString() })
-        .eq('id', gift.id)
-        .select('id');
-      if (archiveError || !archived?.length) throw archiveError || new Error('Não foi possível arquivar este presente.');
-    } else if (error || !data?.length) {
-      throw error || new Error('Não foi possível excluir este presente.');
-    }
+    await api('/admin/gifts/' + gift.id, { method: 'DELETE' });
     await loadDashboard();
   } catch (error) {
     console.error(error);
@@ -213,12 +218,9 @@ async function deleteGift(gift, button) {
 
 async function uploadImage(file) {
   if (!file?.size) return null;
-  if (file.size > 5 * 1024 * 1024) throw new Error('A imagem deve ter no máximo 5 MB.');
-  const extension = file.name.split('.').pop().toLowerCase();
-  const path = `${sessionUser.id}/${crypto.randomUUID()}.${extension}`;
-  const { error } = await supabase.storage.from('gift-images').upload(path, file, { contentType: file.type, upsert: false });
-  if (error) throw error;
-  return path;
+  if (file.size > 4 * 1024 * 1024) throw new Error('A imagem deve ter no máximo 4 MB.');
+  const result = await api('/admin/images', { method: 'POST', body: file, raw: true });
+  return result.path;
 }
 
 giftForm.elements.giftMode.addEventListener('change', updateModeFields);
@@ -228,7 +230,7 @@ giftForm.addEventListener('submit', async (event) => {
   if (!giftForm.reportValidity()) return;
   const status = editor.querySelector('.editor-status');
   if (!configured) {
-    status.textContent = 'A prévia não salva dados. Conecte o projeto Supabase para liberar o cadastro.';
+    status.textContent = 'A prévia não salva dados. Conecte a API para liberar o cadastro.';
     return;
   }
   const button = giftForm.querySelector('.save-gift-button');
@@ -256,11 +258,7 @@ giftForm.addEventListener('submit', async (event) => {
       is_active: giftForm.elements.isActive.checked
     };
     const id = giftForm.elements.id.value;
-    const query = id
-      ? supabase.from('gifts').update(payload).eq('id', id)
-      : supabase.from('gifts').insert({ ...payload, created_by: sessionUser.id });
-    const { error } = await query;
-    if (error) throw error;
+    await api('/admin/gifts' + (id ? '/' + id : ''), { method: id ? 'PATCH' : 'POST', body: payload });
     editor.close();
     await loadDashboard();
   } catch (error) {
@@ -278,7 +276,12 @@ document.querySelector('.export-button').addEventListener('click', () => {
     return;
   }
   const columns = ['Nome', 'E-mail', 'Presente', 'Valor', 'Status', 'Forma de pagamento', 'Mensagem', 'Criado em', 'Pago em'];
-  const escapeCsv = (value) => `"${String(value ?? '').replace(/"/g, '""')}"`;
+  // Texto dos convidados que começa com = + - @ vira fórmula no Excel; o apóstrofo o neutraliza.
+  const escapeCsv = (value) => {
+    const text = String(value ?? '');
+    const safe = /^[=+\-@\t\r]/.test(text) ? `'${text}` : text;
+    return `"${safe.replace(/"/g, '""')}"`;
+  };
   const lines = orders.map((order) => [
     order.guest_name, order.guest_email, order.gifts?.title || '',
     (order.amount_cents / 100).toFixed(2).replace('.', ','), order.status,
@@ -287,7 +290,7 @@ document.querySelector('.export-button').addEventListener('click', () => {
   const blob = new Blob([`\uFEFF${columns.map(escapeCsv).join(';')}\n${lines.join('\n')}`], { type: 'text/csv;charset=utf-8' });
   const link = document.createElement('a');
   link.href = URL.createObjectURL(blob);
-  link.download = `presentes-levy-lais-${new Date().toISOString().slice(0, 10)}.csv`;
+  link.download = `presentes-lais-levy-${new Date().toISOString().slice(0, 10)}.csv`;
   link.click();
   URL.revokeObjectURL(link.href);
 });
@@ -301,11 +304,8 @@ document.querySelector('.refresh-rsvp-button').addEventListener('click', async (
   const status = document.querySelector('.rsvp-panel-status');
   status.textContent = 'Atualizando respostas...';
   try {
-    const { data, error } = await supabase.from('rsvp_responses')
-      .select('id, guest_name, attending, guest_message, created_at')
-      .order('created_at', { ascending: false });
-    if (error) throw error;
-    rsvps = data || [];
+    const data = await api('/admin/dashboard');
+    rsvps = data.rsvps;
     renderRsvps();
     status.textContent = 'Respostas atualizadas.';
   } catch (error) {
@@ -315,102 +315,51 @@ document.querySelector('.refresh-rsvp-button').addEventListener('click', async (
 });
 
 async function loadDashboard() {
-  const [giftResult, orderResult, rsvpResult] = await Promise.all([
-    supabase.from('gifts').select('*').is('archived_at', null).order('sort_order').order('created_at'),
-    supabase.from('gift_orders').select('*, gifts(title)').order('created_at', { ascending: false }),
-    supabase.from('rsvp_responses').select('id, guest_name, attending, guest_message, created_at').order('created_at', { ascending: false })
-  ]);
-  if (giftResult.error) throw giftResult.error;
-  if (orderResult.error) throw orderResult.error;
-  if (rsvpResult.error) throw rsvpResult.error;
-  gifts = giftResult.data || [];
-  orders = orderResult.data || [];
-  rsvps = rsvpResult.data || [];
+  const data = await api('/admin/dashboard');
+  gifts = data.gifts;
+  orders = data.orders;
+  rsvps = data.rsvps;
   renderAll();
 }
 
 async function openAuthenticatedPanel(user) {
-  const { data, error } = await supabase.from('admin_users').select('user_id').eq('user_id', user.id).maybeSingle();
-  if (error || !data) {
-    await supabase.auth.signOut();
-    loginStatus.textContent = 'Este usuário não possui acesso de administrador.';
-    return;
-  }
-  sessionUser = user;
   showShell(user.email);
-  try { await loadDashboard(); } catch (error) { console.error(error); panelStatus.textContent = 'Não foi possível carregar o painel.'; }
-}
-
-function showPasswordSetup(user) {
-  sessionUser = user;
-  document.querySelector('#login-title').textContent = 'Crie sua senha';
-  document.querySelector('.login-intro').textContent = 'Defina uma senha segura para concluir seu acesso ao painel.';
-  loginForm.hidden = true;
-  passwordSetupForm.hidden = false;
-  passwordSetupForm.elements.email.value = user.email || '';
-  passwordSetupForm.elements.password.focus();
+  try { await loadDashboard(); } catch { panelStatus.textContent = 'Não foi possível carregar o painel.'; }
 }
 
 loginForm.addEventListener('submit', async (event) => {
   event.preventDefault();
-  if (!configured) {
-    loginStatus.textContent = 'O acesso será liberado quando o projeto Supabase for conectado.';
-    return;
-  }
   loginStatus.textContent = 'Entrando...';
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email: loginForm.elements.email.value,
-    password: loginForm.elements.password.value
-  });
-  if (error) loginStatus.textContent = 'E-mail ou senha incorretos.';
-  else await openAuthenticatedPanel(data.user);
-});
-
-passwordSetupForm.addEventListener('submit', async (event) => {
-  event.preventDefault();
-  const password = passwordSetupForm.elements.password.value;
-  const confirmation = passwordSetupForm.elements.passwordConfirmation.value;
-  if (password !== confirmation) {
-    passwordStatus.textContent = 'As senhas precisam ser iguais.';
-    return;
-  }
-  const submit = passwordSetupForm.querySelector('button');
-  submit.disabled = true;
-  passwordStatus.textContent = 'Salvando sua senha...';
-  const { data, error } = await supabase.auth.updateUser({ password });
-  submit.disabled = false;
-  if (error) {
-    passwordStatus.textContent = 'Não foi possível salvar a senha. Solicite um novo convite e tente novamente.';
-    return;
-  }
-  history.replaceState({}, document.title, location.pathname);
-  await openAuthenticatedPanel(data.user || sessionUser);
+  const button = loginForm.querySelector('button');
+  button.disabled = true;
+  try {
+    const user = await api('/login', { method: 'POST', body: {
+      email: loginForm.elements.email.value, password: loginForm.elements.password.value
+    } });
+    loginForm.reset();
+    await openAuthenticatedPanel(user);
+  } catch { loginStatus.textContent = 'Não foi possível entrar. Confira e-mail e senha e tente novamente.'; }
+  finally { button.disabled = false; }
 });
 
 document.querySelector('.logout-button').addEventListener('click', async () => {
-  if (supabase) await supabase.auth.signOut();
+  try { await api('/logout', { method: 'POST' }); location.reload(); }
+  catch { panelStatus.textContent = 'Não foi possível sair. Tente novamente.'; }
+});
+
+window.addEventListener('admin-session-expired', () => {
+  // A sessão dura 8 horas. Recarregar leva de volta à tela de entrada.
+  alert('Sua sessão expirou. Entre novamente para continuar.');
   location.reload();
 });
 
 async function initialize() {
   if (!configured) {
-    gifts = demoGifts.map((gift) => ({ ...gift, is_active: true }));
-    loginPanel.hidden = true;
+    gifts = demoGifts.map(gift => ({ ...gift, is_active: true }));
     showShell();
     return;
   }
-  const authFlowType = new URLSearchParams(location.hash.slice(1)).get('type');
-  const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
-  supabase = createClient(registryConfig.supabaseUrl, registryConfig.supabasePublishableKey);
-  const { data } = await supabase.auth.getSession();
-  if (data.session?.user && ['invite', 'recovery'].includes(authFlowType)) {
-    showPasswordSetup(data.session.user);
-    return;
-  }
-  if (data.session?.user) await openAuthenticatedPanel(data.session.user);
+  try { await openAuthenticatedPanel(await api('/session')); }
+  catch (error) { if (error.message !== 'authentication_required') throw error; }
 }
-
-initialize().catch((error) => {
-  console.error(error);
-  loginStatus.textContent = 'Não foi possível iniciar o painel.';
-});
+initialize().catch(() => { loginStatus.textContent = 'Não foi possível iniciar o painel.'; });

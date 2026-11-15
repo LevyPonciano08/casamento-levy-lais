@@ -7,6 +7,18 @@
   border-bottom: 1px solid currentColor;
 }
 
+/* Área de toque mínima de 44px sem alterar o layout nem o sublinhado. */
+.underline-link::before,
+.mini-mark::before {
+  content: "";
+  position: absolute;
+  inset: -12px -8px;
+}
+
+.mini-mark {
+  position: relative;
+}
+
 .underline-link::after {
   content: "";
   position: absolute;
@@ -19,6 +31,11 @@
   transform: scaleX(0);
   transform-origin: right center;
   transition: transform 320ms cubic-bezier(.22, 1, .36, 1);
+}
+
+/* Botão em pílula: sem sublinhado no hover. */
+.nav-rsvp.underline-link::after {
+  display: none;
 }
 
 .underline-link.underline-link,
@@ -54,4 +71,20 @@
   .underline-link.underline-link:is(:hover, :focus-visible) > span {
     transform: none;
   }
+}
+
+/* Seta em SVG: o caractere "↗" vira emoji no iPhone; o desenho fica igual em qualquer aparelho. */
+.arrow-icon {
+  width: 1em;
+  height: 1em;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vertical-align: -0.14em;
+  flex: none;
+}
+
+body {
+  font-variant-emoji: text;
 }

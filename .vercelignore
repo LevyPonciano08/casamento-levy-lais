@@ -1,0 +1,16 @@
+.git/
+.env
+.env.*
+output/
+output/**
+.impeccable/
+.vercel/
+.playwright-cli/
+.playwright-cli/**
+**/*.zip
+supabase/
+node_modules/
+backups-casamento/
+MEMORIA-SITE-CASAMENTO.md
+CONTINUAR-CONFIGURACAO.md
+server/*.test.js

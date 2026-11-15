@@ -1,0 +1,230 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-31T23:53:32.679699+00:00",
+  "title": "Design System: Laís & Levy",
+  "extensions": {
+    "colorMeta": {
+      "ink": {
+        "role": "primary",
+        "displayName": "Deep blue ink"
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Off-white paper"
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "White surface"
+      },
+      "mist": {
+        "role": "neutral",
+        "displayName": "Serenity mist"
+      },
+      "serenity": {
+        "role": "neutral",
+        "displayName": "Soft serenity"
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Muted blue"
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Quiet line"
+      },
+      "deep": {
+        "role": "primary",
+        "displayName": "Blue accent"
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "purpose": "Home names; responsive adaptations remain in source CSS."
+      },
+      "headline": {
+        "purpose": "Home section titles; task routes adapt their hierarchy."
+      },
+      "title": {
+        "purpose": "Sans-serif gift titles."
+      },
+      "body": {
+        "purpose": "Guest prose; registry uses 1.65 leading."
+      },
+      "label": {
+        "purpose": "Shared form labels."
+      }
+    },
+    "shadows": [
+      {
+        "name": "gift-rest",
+        "value": "0 5px 22px #293b4905",
+        "purpose": "Gift cards at rest."
+      },
+      {
+        "name": "gift-hover",
+        "value": "0 16px 38px #293b4912",
+        "purpose": "Available gift hover and focus within."
+      },
+      {
+        "name": "dialog",
+        "value": "0 24px 90px #122b3150",
+        "purpose": "Native modal panel."
+      },
+      {
+        "name": "payment",
+        "value": "0 30px 100px #20344860",
+        "purpose": "Payment return panel."
+      }
+    ],
+    "motion": [
+      {
+        "name": "motion-fast",
+        "value": "160ms",
+        "purpose": "Field state transitions."
+      },
+      {
+        "name": "motion-normal",
+        "value": "300ms",
+        "purpose": "Shared control transitions."
+      },
+      {
+        "name": "motion-slow",
+        "value": "650ms",
+        "purpose": "Shared slow-duration vocabulary; scenes may use explicit durations."
+      },
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(.16,1,.3,1)",
+        "purpose": "Entrances and movement."
+      },
+      {
+        "name": "ease-standard",
+        "value": "cubic-bezier(.2,0,0,1)",
+        "purpose": "Shared standard easing vocabulary."
+      },
+      {
+        "name": "opening-title",
+        "value": "1.2s",
+        "purpose": "Home name entrance."
+      },
+      {
+        "name": "story-dissolve",
+        "value": "850ms",
+        "purpose": "Story photo opacity transition."
+      },
+      {
+        "name": "dialog-enter",
+        "value": "400ms",
+        "purpose": "Native dialog entrance."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "home-narrow",
+        "value": "374px"
+      },
+      {
+        "name": "task-mobile",
+        "value": "600px"
+      },
+      {
+        "name": "home-mobile",
+        "value": "740px"
+      },
+      {
+        "name": "task-tablet",
+        "value": "900px"
+      },
+      {
+        "name": "home-tablet",
+        "value": "1100px"
+      },
+      {
+        "name": "home-wide",
+        "value": "1600px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary action",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Solid guest and operational action.",
+      "html": "<button class=\"ds-primary\">Confirmar presença</button>",
+      "css": ".ds-primary{font-family:var(--body,Manrope,Arial,sans-serif);color:var(--ink);background:var(--ink);color:var(--surface);border:0;border-radius:100px;min-height:54px;padding:16px 24px;font-size:14px;font-weight:600;transition:background 300ms,transform 300ms var(--ease-out)}.ds-primary:hover{background:#3d5974;transform:translateY(-2px)}.ds-primary:active{transform:translateY(1px)}.ds-primary:focus-visible{outline:3px solid #5d7f9f;outline-offset:5px}@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;transform:none!important}}"
+    },
+    {
+      "name": "Photograph action",
+      "kind": "button",
+      "refersTo": "button-photo",
+      "description": "Paper action over photography.",
+      "html": "<button class=\"ds-photo\">Confirmar presença</button>",
+      "css": ".ds-photo{font-family:var(--body,Manrope,Arial,sans-serif);color:var(--ink);background:var(--paper);border:0;border-radius:100px;padding:16px 24px;min-height:55px;font-size:13px;font-weight:600;transition:background .3s,transform .45s var(--ease-out)}.ds-photo:hover{background:white;transform:translateY(-3px)}.ds-photo:active{transform:translateY(1px)}.ds-photo:focus-visible{outline:3px solid #5d7f9f;outline-offset:5px}@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;transform:none!important}}"
+    },
+    {
+      "name": "Guest name",
+      "kind": "input",
+      "refersTo": "field",
+      "description": "Home RSVP text field.",
+      "html": "<label class=\"ds-label\">Nome completo<input class=\"ds-field\" placeholder=\"Seu nome\"></label>",
+      "css": ".ds-label{font-family:var(--body,Manrope,Arial,sans-serif);color:var(--ink);display:block;font-size:13px;font-weight:600}.ds-field{font-family:var(--body,Manrope,Arial,sans-serif);color:var(--ink);display:block;width:100%;margin-top:10px;padding:14px 16px;min-height:52px;font-size:16px;background:var(--surface);border:1px solid var(--line);border-radius:8px;transition:border-color 160ms,box-shadow 160ms}.ds-field:focus{border-color:var(--deep);box-shadow:0 0 0 3px #5d7f9f12}.ds-field:focus-visible{outline:3px solid #5d7f9f;outline-offset:5px}@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;transform:none!important}}"
+    },
+    {
+      "name": "Gift filter",
+      "kind": "chip",
+      "refersTo": "filter",
+      "description": "Pressed filters invert their colors.",
+      "html": "<button class=\"ds-filter\" aria-pressed=\"false\">Experiências</button>",
+      "css": ".ds-filter{font-family:var(--body,Manrope,Arial,sans-serif);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:100px;min-height:44px;padding:10px 19px;font-size:13px}.ds-filter:hover,.ds-filter[aria-pressed=true]{background:var(--ink);border-color:var(--ink);color:var(--surface)}.ds-filter:focus-visible{outline:3px solid #5d7f9f;outline-offset:5px}@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;transform:none!important}}"
+    },
+    {
+      "name": "Gift card",
+      "kind": "card",
+      "refersTo": "gift-card",
+      "description": "Catalog container; preview uses an empty image surface.",
+      "html": "<article class=\"ds-card\" tabindex=\"0\"><div class=\"ds-card-image\"></div><div class=\"ds-card-body\"><h3>Uma experiência juntos</h3><p>Um carinho para o nosso começo.</p></div></article>",
+      "css": ".ds-card{font-family:var(--body,Manrope,Arial,sans-serif);color:var(--ink);background:var(--surface);border-radius:16px;overflow:hidden;box-shadow:0 5px 22px #293b4905;transition:transform .5s var(--ease-out),box-shadow .5s}.ds-card:hover,.ds-card:focus-within{transform:translateY(-5px);box-shadow:0 16px 38px #293b4912}.ds-card-image{aspect-ratio:1.1;background:var(--mist)}.ds-card-body{padding:25px 25px 28px}.ds-card h3{font-size:19px;font-weight:600;line-height:1.4;letter-spacing:-.025em;margin:0}.ds-card p{color:var(--muted);font-size:14px;line-height:1.8}.ds-card:focus-visible{outline:3px solid #5d7f9f;outline-offset:5px}@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;transform:none!important}}"
+    },
+    {
+      "name": "Registry navigation",
+      "kind": "nav",
+      "description": "Paper navigation used by guest task routes.",
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-brand\" href=\"#\">Laís &amp; Levy</a><a href=\"#\">Voltar ao casamento</a></nav>",
+      "css": ".ds-nav{font-family:var(--body,Manrope,Arial,sans-serif);color:var(--ink);display:flex;align-items:center;justify-content:space-between;gap:24px;height:88px;border-bottom:1px solid var(--line);background:var(--paper);padding:0 5%;font-size:13px}.ds-nav a{color:inherit;text-decoration:none;padding:8px 0}.ds-brand{font-family:var(--display);font-size:25px;letter-spacing:-.02em}.ds-nav a:hover{border-bottom:1px solid var(--deep)}.ds-nav a:focus-visible{outline:3px solid #5d7f9f;outline-offset:5px}@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;transform:none!important}}"
+    }
+  ],
+  "narrative": {
+    "northStar": "Cinematic wedding photography in serenity blue",
+    "overview": "The couple's existing photographs carry the emotion. Modern, spacious guest surfaces pair expansive imagery and roman serif titles with restrained sans-serif controls. The same serenity blue palette connects the home, gifts, payment return and administration routes; operational screens adapt the density and typography to their tasks.",
+    "keyCharacteristics": [
+      "Large personal photographs and readable white lettering.",
+      "Deep blue ink, off-white paper and soft serenity blue surfaces.",
+      "Roman display type, rounded controls and visible keyboard focus.",
+      "Fluid motion with a complete reduced-motion alternative."
+    ],
+    "rules": [
+      {
+        "name": "The Roman Title Rule",
+        "body": "Display headings stay roman, including emphasized words and the home ampersand.",
+        "section": "typography"
+      },
+      {
+        "name": "The Motion Preference Rule",
+        "body": "Respect reduced motion in both CSS and JavaScript, including preference changes during the session.",
+        "section": "components"
+      }
+    ],
+    "dos": [
+      "**Do** preserve the couple's existing photographs and monogram.",
+      "**Do** keep guest actions and form labels readable against their surface.",
+      "**Do** adapt density and heading treatment to operational screens.",
+      "**Do** retain visible focus and the reduced-motion alternative."
+    ],
+    "donts": [
+      "**Don't** replace the couple's identity photography with generated portraits.",
+      "**Don't** introduce italic display emphasis into the established roman headings.",
+      "**Don't** require animation for content to become available."
+    ]
+  }
+}

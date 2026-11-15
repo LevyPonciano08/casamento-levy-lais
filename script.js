@@ -1,5 +1,5 @@
 ﻿const menuButton = document.querySelector('.menu-toggle');
-import { registryConfig } from './registry-config.js?v=20260922-turnstile';
+import { registryConfig } from './registry-config.js?v=20261029-postgres';
 
 const menu = document.querySelector('#main-nav');
 function closeMenu() {
@@ -31,7 +31,15 @@ const status = document.querySelector('.form-status');
 const rsvpButton = form.querySelector('.submit-button');
 let rsvpTurnstileToken = '';
 let rsvpTurnstileWidget = null;
+let rsvpVerificationError = '';
 let rsvpSubmissionKey = crypto.randomUUID();
+const companionsField = form.querySelector('.rsvp-companions');
+function updateCompanions() {
+  const declined = form.elements.presenca.value === 'nao';
+  companionsField.hidden = declined;
+  form.elements.acompanhantes.disabled = declined;
+}
+form.addEventListener('change', updateCompanions);
 
 form.addEventListener('submit', async event => {
   event.preventDefault();
@@ -42,10 +50,16 @@ form.addEventListener('submit', async event => {
     return;
   }
   if (!rsvpTurnstileToken) {
-    status.textContent = 'Conclua a verificação de segurança para confirmar.';
+    status.textContent = rsvpVerificationError || 'Aguarde a verificação de segurança. Se ela não aparecer, permita seu carregamento no navegador e atualize a página.';
     return;
   }
   const data = Object.fromEntries(new FormData(form));
+  const companions = data.presenca === 'sim' ? String(data.acompanhantes || '').split(/\r?\n/).map(name => name.trim()).filter(Boolean) : [];
+  if (companions.length > 20 || companions.some(name => name.length < 2 || name.length > 120)) {
+    status.textContent = 'Informe um nome por linha, com 2 a 120 caracteres. Para mais de 20 acompanhantes, fale com os noivos.';
+    form.elements.acompanhantes.focus();
+    return;
+  }
   if (data.nome.trim().length < 2) {
     status.textContent = 'Informe seu nome completo para confirmar.';
     form.elements.nome.focus();
@@ -54,13 +68,14 @@ form.addEventListener('submit', async event => {
   rsvpButton.disabled = true;
   status.textContent = 'Registrando sua resposta...';
   try {
-    const response = await fetch(`${registryConfig.supabaseUrl}/functions/v1/submit-rsvp`, {
+    const response = await fetch(`${registryConfig.apiBaseUrl}/submit-rsvp`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', apikey: registryConfig.supabasePublishableKey },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         submissionKey: rsvpSubmissionKey,
         name: data.nome.trim(),
         attending: data.presenca === 'sim',
+        companions,
         turnstileToken: rsvpTurnstileToken
       })
     });
@@ -70,6 +85,7 @@ form.addEventListener('submit', async event => {
       ? `Presença confirmada, ${data.nome.trim()}! Esperamos você.`
       : `Resposta registrada, ${data.nome.trim()}. Obrigado por avisar!`;
     form.reset();
+    updateCompanions();
     rsvpSubmissionKey = crypto.randomUUID();
   } catch (error) {
     console.error('RSVP submission failed', error);
@@ -94,33 +110,37 @@ function loadRsvpTurnstile() {
       language: 'pt-br',
       theme: 'light',
       size: window.innerWidth <= 390 ? 'compact' : 'flexible',
-      callback: token => { rsvpTurnstileToken = token; },
-      'expired-callback': () => { rsvpTurnstileToken = ''; },
-      'error-callback': () => { rsvpTurnstileToken = ''; }
+      callback: token => {
+        rsvpTurnstileToken = token;
+        rsvpVerificationError = '';
+        status.textContent = 'Verificação concluída. Você já pode enviar sua resposta.';
+      },
+      'expired-callback': () => {
+        rsvpTurnstileToken = '';
+        rsvpVerificationError = 'A verificação expirou. Conclua novamente antes de enviar.';
+        status.textContent = rsvpVerificationError;
+      },
+      'error-callback': code => {
+        rsvpTurnstileToken = '';
+        rsvpVerificationError = String(code) === '110200'
+          ? 'Este endereço não está autorizado para a verificação de segurança. Avise os noivos.'
+          : 'Não foi possível concluir a verificação de segurança. Permita seu carregamento no navegador e atualize a página.';
+        status.textContent = rsvpVerificationError;
+        console.warn('Falha na verificação de segurança:', code);
+      }
     });
   };
   const script = document.createElement('script');
   script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=onRsvpTurnstileLoad';
   script.async = true;
   script.defer = true;
-  script.onerror = () => { status.textContent = 'Não foi possível carregar a verificação. Atualize a página para tentar novamente.'; };
+  script.onerror = () => {
+    rsvpVerificationError = 'Não foi possível carregar a verificação. Permita seu carregamento no navegador e atualize a página.';
+    status.textContent = rsvpVerificationError;
+  };
   document.head.append(script);
 }
 loadRsvpTurnstile();
-
-const floatingGiftsLink = document.querySelector('.floating-gifts-cta');
-if (floatingGiftsLink && 'IntersectionObserver' in window) {
-  const coveredSections = new Set();
-  const floatingLinkObserver = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) coveredSections.add(entry.target);
-      else coveredSections.delete(entry.target);
-    });
-    floatingGiftsLink.classList.toggle('is-hidden', coveredSections.size > 0);
-  }, { threshold: 0 });
-  floatingLinkObserver.observe(document.querySelector('#rsvp'));
-  floatingLinkObserver.observe(document.querySelector('.site-footer'));
-}
 
 const header = document.querySelector('.site-header');
 let headerFrame = 0;
@@ -149,7 +169,7 @@ if (countdown) {
       .map(element => [element.dataset.countdown, element]));
     countdown.querySelector('.countdown-date').textContent = new Intl.DateTimeFormat('pt-BR', {
       dateStyle: 'long', timeStyle: 'short', timeZone: 'America/Fortaleza'
-    }).format(new Date(targetTime)) + ' · Aracati/CE (horário de Brasília)';
+    }).format(new Date(targetTime)) + ' · Aracati/CE';
     let countdownInterval;
     function updateCountdown() {
       const remaining = Math.max(0, Math.ceil((targetTime - Date.now()) / 1000));
@@ -183,14 +203,42 @@ if (carousel) {
   let activeSlide = 0;
   let autoplay;
 
-  function showSlide(index) {
-    activeSlide = (index + slides.length) % slides.length;
-    track.style.transform = `translateX(-${activeSlide * 100}%)`;
+  const realCount = slides.length;
+  const firstClone = slides[0].cloneNode(true);
+  firstClone.setAttribute('aria-hidden', 'true');
+  firstClone.querySelector('img').alt = '';
+  firstClone.querySelector('img').removeAttribute('loading');
+  track.append(firstClone);
+  let index = 0;
+
+  function render(animate) {
+    track.style.transition = animate ? '' : 'none';
+    track.style.setProperty('transform', `translateX(-${index * 100}%)`, 'important');
+    activeSlide = index % realCount;
     position.textContent = String(activeSlide + 1).padStart(2, '0');
     slides.forEach((slide, slideIndex) => {
       slide.setAttribute('aria-hidden', String(slideIndex !== activeSlide));
     });
   }
+
+  function showSlide(target) {
+    if (target < 0) {
+      index = realCount;
+      render(false);
+      track.offsetWidth;
+      index = realCount - 1;
+    } else {
+      index = target;
+    }
+    render(true);
+  }
+
+  track.addEventListener('transitionend', event => {
+    if (event.target === track && index >= realCount) {
+      index = 0;
+      render(false);
+    }
+  });
 
   function stopAutoplay() {
     clearInterval(autoplay);
@@ -198,17 +246,17 @@ if (carousel) {
 
   function startAutoplay() {
     stopAutoplay();
-    if (!reducedMotion.matches && slides.length > 1) {
-      autoplay = setInterval(() => showSlide(activeSlide + 1), 5000);
+    if (!document.hidden && !reducedMotion.matches && slides.length > 1) {
+      autoplay = setInterval(() => showSlide(index + 1), 4000);
     }
   }
 
   previous.addEventListener('click', () => {
-    showSlide(activeSlide - 1);
+    showSlide(index - 1);
     startAutoplay();
   });
   next.addEventListener('click', () => {
-    showSlide(activeSlide + 1);
+    showSlide(index + 1);
     startAutoplay();
   });
   carousel.addEventListener('mouseenter', stopAutoplay);
@@ -222,7 +270,7 @@ if (carousel) {
     else startAutoplay();
   });
   reducedMotion.addEventListener('change', startAutoplay);
-  showSlide(0);
+  render(false);
   startAutoplay();
 }
 

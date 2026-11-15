@@ -1,142 +1,65 @@
-# Configuração da lista de presentes
+# Configuração com PostgreSQL / Neon
 
-Esta etapa conecta a interface já pronta ao banco e ao Mercado Pago. Nenhuma chave privada deve ser colocada nos arquivos públicos do site.
+## Banco e API
 
-## O que já está pronto
+Configure `DATABASE_URL` no `.env` local ou no ambiente privado da hospedagem e execute `npm run db:migrate`. As migrações em `server/migrations/` criam tabelas, catálogo e função transacional de reserva de presentes. Cada migração é aplicada uma vez.
 
-- catálogo público responsivo em `presentes.html`;
-- painel administrativo em `admin.html`;
-- presentes por unidade e por cotas;
-- imagens no Supabase Storage;
-- criação de checkout Pix/cartão no Mercado Pago;
-- webhook com validação de assinatura e consulta do pagamento na API;
-- proteção contra robôs com Cloudflare Turnstile validado no servidor;
-- controle de quantidade, valor restante e pedidos pendentes;
-- página de retorno em `pagamento.html`;
-- modo de prévia, sem cobranças, ativo por padrão.
+O servidor usa conexões TLS com verificação do certificado quando a URL exige SSL. Nunca inclua credenciais no JavaScript público. As imagens são armazenadas no PostgreSQL e servidas por `/api/images/:id`. Novos uploads aceitam até 4 MB, dentro do limite de requisição da Vercel; imagens antigas de até 5 MB continuam preservadas no banco.
 
-## 1. Criar o projeto Supabase
+Execute `npm start`. Site e API devem usar a mesma origem para o cookie administrativo. Em produção, configure:
 
-1. Acesse <https://supabase.com/dashboard> e crie um projeto.
-2. Guarde o `Project ref`, exibido em **Project Settings → General**.
-3. Em **Project Settings → API**, copie:
-   - Project URL;
-   - chave pública `publishable` (ou `anon`, em projetos antigos).
-4. Nunca copie a chave `service_role` para `registry-config.js` ou para o GitHub.
-
-## 2. Conectar e criar o banco
-
-No PowerShell, dentro da pasta do projeto:
-
-```powershell
-npx supabase login
-npx supabase link --project-ref SEU_PROJECT_REF
-npx supabase db push
+```dotenv
+NODE_ENV=production
+SITE_URL=https://seu-dominio
+API_PUBLIC_URL=https://seu-dominio/api
+ALLOWED_ORIGINS=https://seu-dominio
+PAYMENTS_ENABLED=false
 ```
 
-A migração cria tabelas, regras de acesso, catálogo público, reserva de presentes e o bucket de imagens.
+Se houver proxy reverso, configure `TRUST_PROXY` com a quantidade real de proxies confiáveis. O balanceador deve substituir os cabeçalhos de origem do cliente. O cookie de sessão usa HttpOnly, SameSite=Strict e Secure em produção. O servidor só publica os arquivos explicitamente permitidos, sem expor `.env`, fontes de servidor ou dependências.
 
-## 3. Criar o administrador
+## Importar os dados antigos
 
-1. No Supabase, abra **Authentication → Users → Add user**.
-2. Crie o usuário com o e-mail do casal e uma senha forte.
-3. Abra **SQL Editor** e execute, trocando o e-mail:
+Faça a importação antes de aceitar novos pagamentos no Neon. O processo não apaga dados do Supabase.
 
-```sql
-insert into public.admin_users (user_id)
-select id from auth.users where email = 'SEU_EMAIL_AQUI'
-on conflict (user_id) do nothing;
+Configure a conexão privada antiga como `SUPABASE_DATABASE_URL` no `.env`. Prefira uma URL que verifique o certificado TLS (`sslmode=verify-full`). Execute:
+
+```sh
+npm run db:import
 ```
 
-O painel não permite cadastro público. Somente usuários presentes em `admin_users` conseguem administrar a lista.
+São copiadas as tabelas `gifts`, `gift_orders`, `payment_events`, `rsvp_responses` e `admin_audit_log`. As imagens são baixadas do Storage antigo e gravadas no Neon. IDs de presentes, pedidos, referências e eventos são preservados. Referências aos usuários antigos são removidas; os administradores devem ser criados no novo sistema. A leitura do banco antigo usa um snapshot consistente e as gravações no destino ocorrem em uma transação. A importação recusa sobrescrever um destino que já contém pedidos ou uma importação completa.
 
-## 4. Criar a aplicação Mercado Pago
+Sem conexão privada, o comando tenta copiar apenas o catálogo público e suas imagens. Isso não inclui presentes ocultos, pedidos, presenças ou saldos privados. Mantenha os pagamentos desativados até concluir a importação completa e conferir os totais. Depois de importar, compare quantidades, pagamentos aprovados, valores e respostas com o banco original.
 
-1. Acesse <https://www.mercadopago.com.br/developers/panel/app>.
-2. Crie uma aplicação de pagamentos on-line com Checkout Pro.
-3. Comece com o Access Token das credenciais de teste geradas para a aplicação. Atualmente ele pode usar o prefixo `APP_USR`; confirme sempre que está na seção **Credenciais de teste** antes de copiá-lo.
-4. Não coloque o Access Token no navegador, nos arquivos do site ou no GitHub.
+Também é possível importar com `SUPABASE_ACCESS_TOKEN` e `SUPABASE_PROJECT_REF`, sem conhecer a senha do PostgreSQL antigo. O importador faz uma única consulta de leitura pela Management API. Obtenha o token pelo fluxo autorizado do Supabase; não o grave no repositório. `IMPORT_BACKUP_PATH=output/supabase-snapshot.json` salva uma cópia local dos dados privados antes de transformá-los. Essa pasta é ignorada pelo Git.
 
-## 5. Criar a proteção gratuita contra robôs
+A transferência local foi concluída após reativar o projeto antigo: 6 presentes (1 ativo e 5 arquivados), 1 pedido, 2 eventos de pagamento, 20 registros de auditoria, nenhuma resposta de presença e 1 imagem. Todos os campos dos registros foram conferidos com o snapshot, considerando apenas a remoção das referências ao Auth antigo e a troca dos caminhos das imagens. O total aprovado era zero em ambos os bancos. O backup local fica em `output/supabase-snapshot.json`; os dados originais foram preservados.
 
-1. Crie uma conta gratuita em <https://dash.cloudflare.com/>.
-2. Abra **Turnstile → Add widget**.
-3. Cadastre `levyponciano08.github.io` e `localhost` como hostnames permitidos.
-4. Guarde a Site key pública e a Secret key privada.
+## Criar administrador
 
-Essa verificação impede que chamadas automáticas reservem todos os presentes. O servidor rejeita qualquer checkout sem um token válido.
+Preencha `ADMIN_EMAIL` e `ADMIN_PASSWORD` no `.env` (mínimo de 12 caracteres) e execute:
 
-## 6. Configurar e publicar as funções
-
-Copie o modelo de variáveis para o arquivo local já ignorado pelo Git:
-
-```powershell
-Copy-Item supabase/functions/.env.example supabase/functions/.env
-notepad supabase/functions/.env
-npx supabase secrets set --env-file supabase/functions/.env
-npx supabase functions deploy create-checkout
-npx supabase functions deploy mercado-pago-webhook
+```sh
+npm run admin:create
 ```
 
-Preencha o arquivo `.env` com o Access Token de teste e a Secret key do Turnstile. Mantenha `MERCADO_PAGO_ENVIRONMENT=test` durante toda a homologação; altere para `production` somente depois dos testes e junto com o Access Token de produção. Nesse primeiro deploy, a chave do webhook pode ser temporária até o passo seguinte. O arquivo `.env` não deve ser enviado ao GitHub.
+Remova `ADMIN_PASSWORD` depois. A conta nova não depende do Supabase Auth. O login não permite cadastro público nem reutiliza links antigos de convite/recuperação.
 
-Depois de publicar, a URL do webhook será:
+## Turnstile e Mercado Pago
+
+Preencha `TURNSTILE_SECRET_KEY`, `MERCADO_PAGO_ACCESS_TOKEN` e `MERCADO_PAGO_WEBHOOK_SECRET` apenas no servidor. A chave pública Turnstile fica em `registry-config.js`; cadastre o domínio e localhost no widget. A API verifica o token e o hostname retornado pelo Turnstile.
+
+Mantenha `MERCADO_PAGO_ENVIRONMENT=test` durante a homologação. Cadastre no Mercado Pago o novo webhook:
 
 ```text
-https://SEU_PROJECT_REF.supabase.co/functions/v1/mercado-pago-webhook
+https://seu-dominio/api/mercado-pago-webhook
 ```
 
-## 7. Cadastrar o webhook no Mercado Pago
+O webhook valida assinatura e timestamp e consulta a API do Mercado Pago antes de atualizar o pedido. O servidor confere moeda e valor; notificações duplicadas não rebaixam um pedido aprovado. Teste Pix aprovado, recusado, pendente, abandono e estorno. Os testes automatizados simulam o provedor e não substituem a homologação com as credenciais reais.
 
-1. Na aplicação do Mercado Pago, abra **Webhooks**.
-2. Cadastre a URL acima para eventos de **Pagamentos**.
-3. Copie a chave secreta gerada para validar a assinatura.
-4. Substitua `MERCADO_PAGO_WEBHOOK_SECRET` no arquivo local `supabase/functions/.env` e atualize os segredos:
+Defina `PAYMENTS_ENABLED=true` somente após importar/conferir os dados e configurar os segredos. Use `MERCADO_PAGO_ENVIRONMENT=production` apenas com as credenciais de produção. A opção de cartão continua direcionando para a Lejour, como na interface anterior.
 
-```powershell
-npx supabase secrets set --env-file supabase/functions/.env
-```
+## Publicar
 
-Publique novamente a função após alterar o segredo:
-
-```powershell
-npx supabase functions deploy mercado-pago-webhook
-```
-
-## 8. Conectar o navegador ao Supabase
-
-Edite somente os valores públicos em `registry-config.js`:
-
-```js
-export const registryConfig = Object.freeze({
-  supabaseUrl: 'https://SEU_PROJECT_REF.supabase.co',
-  supabasePublishableKey: 'SUA_CHAVE_PUBLICA',
-  createCheckoutUrl: 'https://SEU_PROJECT_REF.supabase.co/functions/v1/create-checkout',
-  turnstileSiteKey: 'SUA_SITE_KEY_PUBLICA_DO_TURNSTILE',
-  siteUrl: 'https://levyponciano08.github.io/casamento-levy-lais',
-  demoMode: false
-});
-```
-
-A URL e a chave pública podem ficar no site. O Access Token do Mercado Pago e a chave `service_role` não podem.
-
-## 9. Testar antes de receber pagamentos reais
-
-1. Entre em `admin.html` e cadastre um presente barato de teste.
-2. Abra `presentes.html` em uma janela anônima.
-3. Use os usuários e cartões de teste fornecidos pelo Mercado Pago.
-4. Confira no painel se o pedido muda para `Aprovado` apenas após o webhook.
-5. Teste pagamento aprovado, recusado, pendente e abandonado.
-6. Confirme que quantidade e cota restante são atualizadas.
-
-Somente depois desses testes substitua o Access Token de teste pelo Access Token de produção, atualize o webhook para produção e faça uma compra real de valor baixo.
-
-## 10. Publicar as páginas
-
-Quando os testes passarem, inclua no deploy do GitHub Pages:
-
-- `presentes.html`, `registry.css`, `registry.js`, `registry-config.js`;
-- `pagamento.html`;
-- `admin.html`, `admin.css`, `admin.js`.
-
-Depois disso, o botão da seção de presentes do site principal pode apontar para `presentes.html`.
+Use uma hospedagem que execute Node.js ou o `Dockerfile`, com HTTPS e as variáveis privadas no ambiente. Rode as migrações antes de iniciar o servidor. Não copie `.env` para a imagem. Confira `/api/health`, login, catálogo, upload e RSVP. Altere o domínio do site e o webhook somente depois de validar a nova hospedagem. O GitHub Pages anterior não é alterado até uma publicação deliberada.

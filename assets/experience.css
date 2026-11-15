@@ -1,0 +1,152 @@
+/* Shared visual and motion vocabulary for all wedding routes. */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Manrope:wght@400;500;600;700&display=swap');
+:root {
+  --paper:#f4f7fa; --surface:#fff; --white:#fff; --mist:#e0e9f2;
+  --serenity:#a7bed3; --ink:#293b49; --muted:#435b70; --line:#c7d4e1; --deep:#5d7f9f;
+  --display:'Cormorant Garamond',Georgia,serif; --editorial:'Cormorant Garamond',Georgia,serif;
+  --body:'Manrope',Arial,sans-serif;
+  --motion-fast:160ms; --motion-normal:300ms; --motion-slow:650ms;
+  --ease-out:cubic-bezier(.16,1,.3,1); --ease-standard:cubic-bezier(.2,0,0,1);
+}
+html {scroll-behavior:smooth;scroll-padding-top:100px;scrollbar-color:#8ba5bd var(--paper)}
+body {font-family:var(--body);-webkit-font-smoothing:antialiased; background:var(--paper);color:var(--ink)}
+::selection {background:#c5d6e7;color:#293b49}
+input,textarea,select {caret-color:var(--ink);accent-color:var(--ink)}
+:focus-visible {outline:3px solid #5d7f9f;outline-offset:5px}
+button,a,input,textarea,select {-webkit-tap-highlight-color:transparent}
+button,a {touch-action:manipulation}
+button {transition:background var(--motion-normal),color var(--motion-normal),border-color var(--motion-normal),box-shadow var(--motion-normal),transform var(--motion-normal) var(--ease-out)}
+button:active {transform:translateY(1px)}
+button:disabled {cursor:not-allowed;opacity:.6}
+input,textarea,select {transition:border-color var(--motion-fast),box-shadow var(--motion-fast);border-radius:8px!important;font-size:16px!important}
+input:focus,textarea:focus,select:focus {border-color:var(--deep)!important;box-shadow:0 0 0 3px #5d7f9f12}
+h1,h2,h3 {text-wrap:balance}
+h1 em,h2 em,h2 i {font-style:normal}
+p {text-wrap:pretty}
+[hidden] {display:none!important}
+.eyebrow {text-transform:none;letter-spacing:0;font-size:14px}
+.monogram,.admin-monogram {background:var(--deep)}
+.primary-link,.checkout-button,.login-form button,.save-gift-button,.new-gift-button {background:var(--ink);color:var(--white);border:0;border-radius:100px;min-height:54px;padding:16px 24px;font-size:14px;font-weight:600;transition:background .3s,transform .3s var(--ease-out)}
+.primary-link:hover,.checkout-button:hover,.login-form button:hover,.save-gift-button:hover,.new-gift-button:hover {background:#3d5974;transform:translateY(-2px)}
+dialog {border:0!important;border-radius:20px;box-shadow:0 24px 90px #122b3150!important}
+dialog[open] {animation:dialog-in 400ms var(--ease-out) both}
+dialog::backdrop {background:#203448a6!important;backdrop-filter:blur(7px);animation:backdrop-in 300ms ease both}
+.dialog-close,.editor-close {border-radius:50%;background:var(--mist);color:var(--ink);line-height:1;z-index:2}
+.dialog-close:hover,.editor-close:hover {background:var(--serenity);transform:rotate(90deg)}
+.payment-choice-option {border-radius:12px;min-height:140px;transition:background .25s,border-color .25s,transform .4s var(--ease-out)}
+.payment-choice-option:hover {transform:translateY(-3px)}
+.lejour-message {border:0;border-radius:12px;background:var(--mist)}
+.gift-dialog .field label,.gift-editor-form label,.login-form label {font-size:14px}
+.field small,.payment-choice-note,.check-field {font-size:13px;line-height:1.65}
+.payment-choice-option span {font-size:13px}
+.registry-header {position:sticky;top:0;z-index:10;background:var(--paper);height:88px;border-bottom:1px solid var(--line)}
+.brand {font-family:var(--display);font-size:25px;letter-spacing:-.02em}
+.registry-hero {position:relative;padding-top:95px;padding-bottom:95px;gap:8%;background:var(--ink);color:white;overflow:hidden}
+.registry-hero::after {content:'';position:absolute;inset:0 0 0 62%;background:linear-gradient(90deg,#293b49,transparent),url('../img/presentes-1200.webp') center 35%/cover;opacity:.26;pointer-events:none}
+.registry-hero>* {position:relative;z-index:1}
+.registry-hero h1 {font-size:clamp(52px,7vw,96px);line-height:.98;letter-spacing:-.035em}
+.registry-hero .hero-note {color:#e2eaf2;font-size:16px;line-height:1.85;max-width:36ch}
+.catalog-section {padding-top:75px;background:var(--paper)}
+.catalog-heading h2 {font-size:clamp(38px,4vw,58px)}
+.filter-button {min-height:44px;padding:10px 19px;background:var(--surface);font-size:13px}
+.gift-grid {gap:42px 28px}
+.gift-card {padding:0;border:0;border-radius:16px;background:var(--surface);overflow:hidden;box-shadow:0 5px 22px #293b4905;transition:transform .5s var(--ease-out),box-shadow .5s}
+.gift-card-available:hover,.gift-card-available:focus-within {border-color:transparent;box-shadow:0 16px 38px #293b4912;transform:translateY(-5px)}
+.gift-image {border:0;aspect-ratio:1.1;background:#e0e9f2}
+.gift-image img {transition:transform 900ms var(--ease-out);object-fit:cover;padding:0}
+.gift-card:hover .gift-image img {transform:scale(1.06)}
+.gift-placeholder {background:var(--mist)}
+.gift-number {display:none}
+.gift-body,.gift-card .gift-body {padding:25px 25px 28px}
+.gift-category {text-transform:none;letter-spacing:0;font-size:12px;color:var(--muted);margin-bottom:10px}
+.gift-title {font-family:var(--body);font-size:19px;font-weight:600;line-height:1.4;letter-spacing:-.025em}
+.gift-description {font-size:14px;line-height:1.8}
+.gift-price-row {margin-top:auto;border-color:#dce5ef;padding-top:20px}
+.gift-price {font-size:15px}
+.gift-button {border:0;background:var(--ink);border-radius:100px;color:white;padding:10px 17px;font-size:12px;white-space:nowrap}
+.gift-button::after {display:none}
+.gift-progress {border-radius:5px}
+.registry-help {background:var(--mist);padding-top:75px;padding-bottom:75px;grid-template-columns:.5fr 1.5fr}
+.registry-help h2 {font-size:clamp(38px,4.6vw,64px)}
+.registry-help>.monogram {width:115px;height:145px;justify-self:center}
+.registry-help p {line-height:1.85}
+.payment-page {background:var(--ink);padding:32px}
+.payment-result {border:0;border-radius:24px;box-shadow:0 30px 100px #20344860}
+.payment-result h1 {font-size:clamp(46px,6vw,76px)}
+.payment-result small {font-size:13px;line-height:1.7}
+.payment-result .monogram {width:56px;height:68px}
+body:has(.login-panel) {min-height:100dvh}
+body:has(.login-panel:not([hidden])) {background:linear-gradient(90deg,#293b490d,#293b4900),var(--paper)}
+.login-panel {border:0;border-radius:24px;box-shadow:0 20px 80px #293b490b;margin:clamp(32px,8vh,85px) auto;padding:50px;width:min(520px,calc(100% - 32px))}
+.login-panel h1 {font-size:54px}
+.login-panel>.admin-monogram {width:45px;height:55px;margin-bottom:24px}
+.login-panel>p:not(.eyebrow) {font-size:15px;line-height:1.8}
+.login-status {font-size:14px}
+.admin-header {position:sticky;top:0;z-index:10;background:var(--paper)}
+.admin-sidebar {background:var(--ink);color:white;border:0;gap:20px}
+.admin-sidebar a,.admin-sidebar .nav-button span {color:#d2dfed}
+.admin-sidebar .nav-button {color:white;border-color:#ffffff22;border-radius:10px;margin:4px 16px;width:calc(100% - 32px);padding:16px}
+.admin-sidebar .nav-button.active {background:#ffffff18;border-color:#ffffff22}
+.admin-sidebar .nav-button:hover {background:#ffffff12}
+.admin-sidebar nav {margin-left:-32px;margin-right:-32px}
+.admin-sidebar h1 {font-size:36px}
+.admin-brand {font-size:24px}
+.stats-grid article {border:0;border-radius:14px;padding:25px}
+.stats-grid span {font-size:13px;text-transform:none;letter-spacing:0}
+.stats-grid strong {font-family:var(--body);font-size:30px;font-weight:500}
+.view-heading h2 {font-size:48px}
+.orders-table-wrap {border-radius:14px;overscroll-behavior-x:contain}
+.gift-actions button {border-radius:8px;min-height:44px}
+.admin-gift {padding:22px 0}
+.admin-gift-image {border:0;border-radius:8px}
+.admin-gift-main strong {font-family:var(--body);font-size:16px;font-weight:600}
+.admin-gift-main span,.admin-gift-meta span {font-size:12px}
+.status-pill {font-size:12px;background:var(--mist)}
+.setup-notice {border:0;border-radius:12px;font-size:13px}
+.gift-editor h2 {font-size:42px}
+.admin-gift-list:empty {border:0}
+.view-heading,.stats-grid,.login-panel,.registry-hero {animation:surface-in 800ms var(--ease-out) both}
+@keyframes surface-in {from{opacity:.65;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes dialog-in {from{opacity:0;transform:translateY(22px) scale(.97)}to{opacity:1;transform:none}}
+@keyframes backdrop-in {from{opacity:0}to{opacity:1}}
+@media(max-width:900px) {
+  .registry-hero::after {inset:0 0 0 35%;opacity:.18}
+  .registry-hero .hero-note {max-width:52ch}
+  .admin-sidebar {padding:25px 5%}
+  .admin-sidebar nav {margin:0}
+  .admin-sidebar .nav-button {margin:0;width:auto}
+}
+@media(max-width:600px) {
+  html {scroll-padding-top:85px}
+  .registry-header {height:72px}
+  .brand>span:last-child {display:block;font-size:20px}
+  .brand .monogram {display:none}
+  .back-link {font-size:12px}
+  .back-link span {display:none}
+  .registry-hero {padding:64px 7%}
+  .registry-hero .hero-note {font-size:15px}
+  .gift-grid {gap:24px}
+  .gift-card .gift-body {padding:24px}
+  .gift-image {aspect-ratio:1.25}
+  .registry-help {grid-template-columns:1fr;gap:25px}
+  .registry-help>.monogram {width:65px;height:80px}
+  .registry-help p {font-size:15px}
+  .login-panel {padding:32px 25px}
+  .login-panel h1 {font-size:44px}
+  .payment-page {padding:18px}
+  .payment-result {padding:40px 24px}
+  .admin-sidebar nav {margin-top:20px;display:flex;gap:6px;flex-wrap:wrap}
+  .admin-sidebar .nav-button {flex:1;padding:12px;font-size:13px}
+}
+@media(prefers-reduced-motion:reduce) {
+  :root {--motion-fast:0ms;--motion-normal:0ms;--motion-slow:0ms}
+  html {scroll-behavior:auto!important}
+  *,*::before,*::after {animation:none!important;transition:none!important;scroll-behavior:auto!important}
+  .gift-card-available:hover,.primary-link:hover,.checkout-button:hover {transform:none}
+}
+/* Dense tables still keep their column labels readable. */
+th{font-size:12px;text-transform:none;letter-spacing:0}
+/* The public registry opens in the same serenity blue as the invitation. */
+.registry-hero{background:var(--serenity);color:var(--ink)}
+.registry-hero .hero-note{color:var(--ink)}
+.registry-hero::after{background:linear-gradient(90deg,#a7bed3,transparent),url('../img/presentes-1200.webp') center 35%/cover}

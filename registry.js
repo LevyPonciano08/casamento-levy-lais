@@ -1,17 +1,15 @@
-import { registryConfig, demoGifts } from './registry-config.js?v=20260922-turnstile';
+import { api } from './api-client.js';
+import { registryConfig, demoGifts } from './registry-config.js?v=20261029-postgres';
 
 const grid = document.querySelector('.gift-grid');
 const catalogStatus = document.querySelector('.catalog-status');
 const filters = document.querySelector('.category-filters');
-const paymentChoice = document.querySelector('.payment-choice-dialog');
-const lejourDialog = document.querySelector('.lejour-dialog');
 const dialog = document.querySelector('.gift-dialog');
 const form = document.querySelector('.gift-form');
 const formStatus = document.querySelector('.form-status');
 const demoNotice = document.querySelector('#demo-notice');
 let gifts = [];
 let activeCategory = 'Todos';
-let selectedGift = null;
 let turnstileToken = '';
 let turnstileWidgetId = null;
 
@@ -19,8 +17,7 @@ const money = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL
 const formatMoney = (cents) => money.format(Number(cents) / 100);
 
 function storageImage(path) {
-  if (!path || !registryConfig.supabaseUrl) return '';
-  return `${registryConfig.supabaseUrl}/storage/v1/object/public/gift-images/${path}`;
+  return path ? `${registryConfig.apiBaseUrl}/images/${path}` : '';
 }
 
 function element(tag, className, text) {
@@ -74,7 +71,14 @@ function createGiftCard(gift, index) {
     card.classList.add('gift-card-available');
     button.setAttribute('aria-haspopup', 'dialog');
   }
-  if (available) button.addEventListener('click', () => openPaymentChoice(gift));
+  if (available) {
+    button.addEventListener('click', () => openGift(gift));
+    // O card inteiro abre o presente; o botão continua sendo o alvo de teclado.
+    card.addEventListener('click', (event) => {
+      if (event.target.closest('button, a')) return;
+      openGift(gift);
+    });
+  }
   row.append(button);
   body.append(row);
   card.append(imageWrap, body);
@@ -87,12 +91,20 @@ function renderGifts() {
   catalogStatus.hidden = true;
   if (!visible.length) {
     catalogStatus.hidden = false;
-    catalogStatus.textContent = 'Nenhum presente disponível nesta categoria.';
+    catalogStatus.textContent = gifts.length
+      ? 'Nenhum presente disponível nesta categoria.'
+      : 'Estamos preparando uma nova lista de presentes com carinho. Volte em breve para conferir.';
   }
 }
 
 function renderFilters() {
-  const categories = ['Todos', ...new Set(gifts.map((gift) => gift.category))];
+  if (!gifts.length) {
+    filters.replaceChildren();
+    return;
+  }
+  // "Outros" fica sempre por último, depois das demais categorias.
+  const found = [...new Set(gifts.map((gift) => gift.category))];
+  const categories = ['Todos', ...found.filter((name) => name !== 'Outros'), ...found.filter((name) => name === 'Outros')];
   filters.replaceChildren(...categories.map((category) => {
     const button = element('button', 'filter-button', category);
     button.type = 'button';
@@ -112,33 +124,66 @@ function parseAmount(value) {
   return Number.isFinite(amount) ? Math.round(amount * 100) : 0;
 }
 
-function openPaymentChoice(gift) {
-  selectedGift = gift;
-  paymentChoice.querySelector('.payment-choice-gift').textContent = gift.title;
-  paymentChoice.showModal();
+const amountInput = form.elements.amount;
+const amountError = form.querySelector('.amount-error');
+const amountBox = amountInput.closest('.money-input');
+
+// Máscara de dinheiro: os dígitos entram da direita para a esquerda (1000 → 10,00).
+function maskAmount(digits) {
+  const cents = digits.replace(/\D/g, '').replace(/^0+/, '').slice(0, 9);
+  if (!cents) return '';
+  const padded = cents.padStart(3, '0');
+  const reais = padded.slice(0, -2).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  return `${reais},${padded.slice(-2)}`;
 }
 
-paymentChoice.querySelector('.dialog-close').addEventListener('click', () => paymentChoice.close());
-paymentChoice.addEventListener('click', (event) => {
-  if (event.target === paymentChoice) paymentChoice.close();
+function showAmountError(message) {
+  amountError.textContent = message;
+  amountError.hidden = !message;
+  amountBox.classList.toggle('is-invalid', Boolean(message));
+  amountInput.setAttribute('aria-invalid', message ? 'true' : 'false');
+}
+
+// Devolve a mensagem de erro, ou '' quando o valor é permitido.
+function amountProblem(gift) {
+  if (!gift || gift.gift_mode !== 'quota') return '';
+  const cents = parseAmount(amountInput.value);
+  if (cents < gift.minimum_contribution_cents) {
+    return `Valor não permitido. O mínimo é ${formatMoney(gift.minimum_contribution_cents)}.`;
+  }
+  if (cents > gift.remaining_amount_cents) {
+    return `Valor não permitido. O máximo disponível é ${formatMoney(gift.remaining_amount_cents)}.`;
+  }
+  return '';
+}
+
+const currentGift = () => gifts.find((item) => item.id === form.elements.giftId.value);
+
+amountInput.addEventListener('input', () => {
+  amountInput.value = maskAmount(amountInput.value);
+  amountInput.setSelectionRange(amountInput.value.length, amountInput.value.length);
+  // Enquanto há um aviso na tela, ele some assim que o valor passa a ser permitido.
+  if (!amountError.hidden) showAmountError(amountProblem(currentGift()));
 });
-paymentChoice.querySelector('.pix-option').addEventListener('click', () => {
-  if (!selectedGift) return;
-  paymentChoice.close();
-  openGift(selectedGift);
+amountInput.addEventListener('blur', () => showAmountError(amountProblem(currentGift())));
+// O valor sugerido vem selecionado: quem digita substitui, em vez de acrescentar dígitos.
+amountInput.addEventListener('focus', () => setTimeout(() => amountInput.select(), 0));
+amountInput.addEventListener('click', () => amountInput.select());
+
+// Voltar da página de pagamento restaura esta página sem recarregar: libera o botão
+// e pede uma nova verificação, porque a anterior só vale uma vez.
+window.addEventListener('pageshow', (event) => {
+  if (!event.persisted) return;
+  const submit = form.querySelector('.checkout-button');
+  if (submit) submit.disabled = false;
+  formStatus.textContent = '';
+  turnstileToken = '';
+  if (turnstileWidgetId !== null && window.turnstile) window.turnstile.reset(turnstileWidgetId);
 });
-paymentChoice.querySelector('.card-option').addEventListener('click', () => {
-  paymentChoice.close();
-  lejourDialog.showModal();
-});
-lejourDialog.querySelector('.dialog-close').addEventListener('click', () => lejourDialog.close());
-lejourDialog.addEventListener('click', (event) => {
-  if (event.target === lejourDialog) lejourDialog.close();
-});
-lejourDialog.querySelector('.lejour-continue').addEventListener('click', () => lejourDialog.close());
 
 function openGift(gift) {
   form.reset();
+  showAmountError('');
   formStatus.textContent = '';
   turnstileToken = '';
   if (turnstileWidgetId !== null && window.turnstile) window.turnstile.reset(turnstileWidgetId);
@@ -174,17 +219,20 @@ dialog.addEventListener('click', (event) => {
 
 form.addEventListener('submit', async (event) => {
   event.preventDefault();
-  if (!form.reportValidity()) return;
-  const gift = gifts.find((item) => item.id === form.elements.giftId.value);
+  const gift = currentGift();
   if (!gift) return;
 
-  const amountCents = gift.gift_mode === 'quota' ? parseAmount(form.elements.amount.value) : null;
-  if (gift.gift_mode === 'quota' && (amountCents < gift.minimum_contribution_cents || amountCents > gift.remaining_amount_cents)) {
-    formStatus.textContent = `Escolha um valor entre ${formatMoney(gift.minimum_contribution_cents)} e ${formatMoney(gift.remaining_amount_cents)}.`;
+  const problem = amountProblem(gift);
+  showAmountError(problem);
+  if (problem) {
+    amountInput.focus();
     return;
   }
+  if (!form.reportValidity()) return;
+
+  const amountCents = gift.gift_mode === 'quota' ? parseAmount(form.elements.amount.value) : null;
   if (registryConfig.demoMode) {
-    formStatus.textContent = 'Esta é a prévia. O botão será liberado assim que as contas do Supabase e Mercado Pago forem conectadas.';
+    formStatus.textContent = 'Esta é a prévia. O botão será liberado quando os serviços de pagamento estiverem configurados.';
     return;
   }
   if (!registryConfig.turnstileSiteKey || !turnstileToken) {
@@ -196,16 +244,16 @@ form.addEventListener('submit', async (event) => {
   submit.disabled = true;
   formStatus.textContent = 'Preparando o pagamento seguro...';
   try {
-    const endpoint = registryConfig.createCheckoutUrl || `${registryConfig.supabaseUrl}/functions/v1/create-checkout`;
+    const endpoint = `${registryConfig.apiBaseUrl}/create-checkout`;
     const response = await fetch(endpoint, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'apikey': registryConfig.supabasePublishableKey },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         giftId: gift.id,
         guestName: form.elements.guestName.value,
         guestEmail: form.elements.guestEmail.value,
         guestMessage: form.elements.guestMessage.value,
-        publicName: form.elements.publicName.checked,
+        publicName: true,
         amountCents,
         quantity: Number(form.elements.quantity.value || 1),
         turnstileToken
@@ -216,8 +264,14 @@ form.addEventListener('submit', async (event) => {
     location.assign(result.checkoutUrl);
   } catch (error) {
     console.error(error);
-    formStatus.textContent = error.message === 'gift_not_available'
+    formStatus.textContent = error.message === 'payments_not_enabled'
+      ? 'O pagamento está temporariamente indisponível. Tente novamente mais tarde.'
+      : error.message === 'gift_not_available'
       ? 'Este presente acabou de ser escolhido por outra pessoa.'
+      : ['invalid_contribution_amount', 'invalid_order_amount'].includes(error.message)
+      ? 'Valor não permitido. Confira o valor e tente novamente.'
+      : error.message === 'invalid_request'
+      ? 'Confira seu nome, seu e-mail e o valor e tente novamente.'
       : error.message.startsWith('human_verification')
         ? 'A verificação de segurança expirou. Conclua novamente para continuar.'
         : 'Não foi possível abrir o pagamento agora. Tente novamente em alguns instantes.';
@@ -258,11 +312,7 @@ async function loadGifts() {
     demoNotice.hidden = false;
     gifts = [...demoGifts];
   } else {
-    const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
-    const supabase = createClient(registryConfig.supabaseUrl, registryConfig.supabasePublishableKey);
-    const { data, error } = await supabase.from('gift_catalog').select('*').order('sort_order').order('title');
-    if (error) throw error;
-    gifts = data ?? [];
+    gifts = await api('/gifts');
   }
   renderFilters();
   renderGifts();
