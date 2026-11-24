@@ -10,7 +10,10 @@ async function providerRequest(path, body) {
   const response = await fetch(`${api}${path}`, {
     method: 'POST', headers: headers(), body: JSON.stringify(body), signal: AbortSignal.timeout(15000)
   });
-  if (!response.ok) throw Object.assign(new Error('payment_provider_unavailable'), { status: 502 });
+  if (!response.ok) {
+    console.error('[infinitepay] erro do provedor', { path, status: response.status });
+    throw Object.assign(new Error('payment_provider_unavailable'), { status: 502 });
+  }
   return response.json();
 }
 export async function infiniteCheckout(req, res) {
@@ -69,10 +72,13 @@ export async function confirmInfinitePayment(input) {
   }
   const { rows: [existing] } = await pool.query("select * from gift_orders where id=$1 and payment_provider='infinitepay'", [orderId]);
   if (!existing) throw Object.assign(new Error('not_found'), { status: 404 });
-  if (existing.infinitepay_slug && existing.infinitepay_slug !== slug) throw Object.assign(new Error('invalid_request'), { status: 400 });
+  // O slug guardado vem do link de checkout; o que chega no webhook/retorno e o codigo da fatura
+  // e pode ser diferente. Por isso ele nao e comparado: quem decide e o /payment_check.
   // Neither the webhook body nor the return URL is evidence of payment.
   const checked = await providerRequest('/payment_check', { order_nsu: orderId, slug, transaction_nsu: transactionId });
   if (checked.success !== true || checked.paid !== true) {
+    console.warn('[infinitepay] payment_check nao confirmou', { order: orderId, success: checked.success, paid: checked.paid,
+      slug_recebido: slug, slug_guardado: existing.infinitepay_slug });
     return { status: ['approved', 'refunded', 'review'].includes(existing.status) ? existing.status : 'pending' };
   }
   return transaction(async client => {
@@ -94,11 +100,18 @@ export async function confirmInfinitePayment(input) {
     await client.query(`update gift_orders set status=$1,infinitepay_slug=coalesce(infinitepay_slug,$2),
       infinitepay_transaction_id=coalesce(infinitepay_transaction_id,$3),payment_method=coalesce(payment_method,$4),
       paid_at=coalesce(paid_at,now()) where id=$5`, [status, slug, transactionId, method, orderId]);
+    if (status !== 'approved') console.warn('[infinitepay] pedido fora de aprovado', { order: orderId, status, ...details });
+    else console.info('[infinitepay] pedido aprovado', { order: orderId, status });
     return { status };
   });
 }
 export async function infiniteWebhook(req, res) {
-  await confirmInfinitePayment(req.body);
+  try {
+    await confirmInfinitePayment(req.body);
+  } catch (error) {
+    console.error('[infinitepay] webhook recusado', { motivo: error.message, order: req.body?.order_nsu });
+    throw error;
+  }
   res.json({ received: true });
 }
 export async function infiniteReturn(req, res) {

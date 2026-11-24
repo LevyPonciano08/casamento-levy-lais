@@ -85,10 +85,13 @@ test('InfinitePay: checkout e confirmação independente do navegador', { skip: 
       await post('/api/infinitepay-webhook', body);
       assert.equal(await status(order), 'approved');
     });
-    await t.test('cobrança atrasada vai para revisão e slug trocado é recusado', async () => {
+    await t.test('cobrança atrasada vai para revisão e slug diferente do link não bloqueia a confirmação', async () => {
       const order = await checkout();
       const body = notification(order);
-      assert.equal((await post('/api/infinitepay-webhook', { ...body, invoice_slug: 'different' })).status, 400);
+      verified = { success: false, paid: false };
+      // O slug da fatura pode diferir do slug do link; só o /payment_check decide.
+      assert.equal((await post('/api/infinitepay-webhook', { ...body, invoice_slug: 'different' })).status, 200);
+      assert.equal(await status(order), 'pending');
       verified = { success: true, paid: true, amount: 100, paid_amount: 100, capture_method: 'pix' };
       await pool.query("update gift_orders set expires_at=now()-interval '1 minute' where id=$1", [order]);
       await post('/api/infinitepay-webhook', body);
